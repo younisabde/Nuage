@@ -1,12 +1,13 @@
 # Nuage
 
-Un espace pour vider son sac. On raconte ce qui ne va pas, et Nuage répond avec chaleur, écoute et petits conseils concrets, comme un ami, pas comme un robot. Nuage est accompagné de Bouboule, son doudou ourson, qui se présente dans la première conversation.
+Un espace pour vider son sac. On raconte ce qui ne va pas, et Nuage répond avec chaleur, écoute et petits conseils concrets, comme un ami, pas comme un robot. Nuage est accompagné de Bouboule, son doudou ourson, avec qui on peut vider son sac.
 
 ### Ce que fait l'app
 - **Accueil** : prénom (facultatif), « météo intérieure » (☀️ ⛅ 🌫️ 🌧️ ⛈️) et **style d'écoute** : 👂 juste écouter, 💡 des conseils, ou 🎈 me changer les idées. Le style se change aussi pendant la conversation.
 - **Conversation** : des messages courts et chaleureux, une question à la fois. Nuage « tape » ses réponses, et le petit nuage s'anime quand il écrit.
 - **Mémoire** : toutes les 4 réponses et en fin de conversation, Nuage met à jour un petit carnet (8 faits maximum + le dernier sujet abordé). À la visite suivante, il prend des nouvelles (« la dernière fois tu me parlais de… »). Le carnet est visible, et chaque élément peut être effacé (« Ce que je retiens de toi »).
-- **Menu en bas** : Parler, Outils, Journal, Mon Nuage.
+- **Menu en bas** : Parler, Bouboule, Outils, Journal, Mon Nuage.
+- **Bouboule, le mode « vider son sac »** : Nuage le présente dans la première conversation. Dans son onglet, on peut tout lâcher, en vrac ; Bouboule écoute, ne juge pas, ne donne pas de conseils (sauf si on lui en demande) et répond en quelques mots tout doux. Sa conversation est séparée de celle de Nuage.
 - **Évacue ta colère** (mis en avant dans Outils et dans la conversation) : on note sa colère sur 10, on écrit tout, et le texte prend feu et part en fumée ; on note ensuite sa colère à nouveau pour voir la différence. Rien n'est gardé ni envoyé.
 - **Journal météo** : chaque météo choisie est notée par jour (on peut aussi la noter sans discuter). Calendrier des 4 dernières semaines et bilan comparé à la semaine précédente.
 - **Boîte à outils** : respiration guidée (4 s inspire, 4 s pause, 6 s expire), ancrage 5-4-3-2-1, liste de petits plaisirs avec tirage au hasard. Nuage s'appuie sur cette liste pour remonter le moral.
@@ -21,7 +22,7 @@ Une fois en ligne, n'importe qui peut ouvrir l'adresse et ajouter Nuage à son �
 | Fichier | Rôle |
 |---|---|
 | `index.html` | Toute l'interface (HTML, CSS et JS sans dépendance) |
-| `api/_nuage.js` | Personnalité de Nuage, consignes du carnet et contexte envoyé à l'IA. C'est le fichier à modifier pour changer son ton |
+| `api/_nuage.js` | Personnalité de Nuage et de Bouboule, consignes du carnet et contexte envoyé à l'IA. C'est le fichier à modifier pour changer leur ton |
 | `api/chat.js` | Route serveur : appelle Claude et renvoie la réponse en direct |
 | `api/memo.js` | Route serveur : met à jour le carnet |
 | `sw.js`, `manifest.webmanifest`, `icon-*.png` | Ce qui permet d'installer Nuage comme une appli |

@@ -188,7 +188,7 @@
   /* --- Barre de menu --- */
   .tabs {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     border-top: 1px solid var(--line);
     background: var(--surface);
     padding: 6px var(--gut-r) calc(env(safe-area-inset-bottom, 0px) + 6px) var(--gut);
@@ -554,6 +554,15 @@
   .teddy-mini { flex: none; width: 34px; height: 34px; display: block; }
   .row.bouboule .bubble { background: #FFF4E6; color: #4A2E1E; border: 1px solid #F2D9BC; border-bottom-left-radius: 6px; }
 
+  .bb-head { display: flex; align-items: center; gap: 14px; padding: 16px var(--gut-r) 12px var(--gut); border-bottom: 1px solid var(--line); }
+  .bb-head .teddy-big { flex: none; width: 64px; height: 64px; animation: breathe 4s ease-in-out infinite; }
+  .bb-head.think .teddy-big { animation: tilt 1.6s ease-in-out infinite; }
+  @keyframes breathe { 50% { transform: scale(1.04); } }
+  @keyframes tilt { 50% { transform: rotate(-5deg); } }
+  .bb-head .txt { flex: 1; min-width: 0; }
+  .bb-head h2 { margin: 0; font: 800 22px/1.15 var(--display); }
+  .bb-head p { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
   }
@@ -612,7 +621,7 @@
           <button type="button" class="chip tool" id="styleChip"></button>
           <button type="button" class="chip fire" data-open="release">🔥 Évacue ta colère</button>
           <button type="button" class="chip tool" data-tool="breath">🫧 Respirer</button>
-          <button type="button" class="chip" data-say="J’ai juste besoin de vider mon sac.">Vider mon sac</button>
+          <button type="button" class="chip tool" data-go="bouboule">🧸 Vider mon sac avec Bouboule</button>
           <button type="button" class="chip" data-say="Je suis stressé·e et j’arrive pas à redescendre.">Je stresse</button>
           <button type="button" class="chip" data-say="Je me sens seul·e en ce moment.">Je me sens seul·e</button>
           <button type="button" class="chip" data-say="J’arrive pas à dormir, ça tourne dans ma tête.">Je dors mal</button>
@@ -625,6 +634,31 @@
           </button>
         </form>
       </div>
+    </section>
+
+    <!-- BOUBOULE : vider son sac -->
+    <section class="page" id="page-bouboule" data-page="bouboule" hidden>
+      <div class="bb-head" id="bbHead">
+        <span id="bbFace"></span>
+        <div class="txt">
+          <h2>Bouboule</h2>
+          <p id="bbState">Vide ton sac, je t’écoute 🧸</p>
+        </div>
+        <button type="button" class="icon-btn" id="bbNew" aria-label="Recommencer avec Bouboule" title="Recommencer">
+          <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4h4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+      <div class="thread" id="bbThread" role="log" aria-live="polite" aria-label="Conversation avec Bouboule"></div>
+      <div class="crisis" id="bbCrisis" role="alert" hidden>
+        <strong>Tu n’es pas seul·e avec ça.</strong>
+        Des humains sont là pour t’écouter tout de suite, gratuitement : appelle le <b>3114</b> (24h/24). En cas de danger immédiat : <b>112</b>.
+      </div>
+      <form class="composer" id="bbForm">
+        <textarea id="bbInput" rows="1" placeholder="Lâche tout, en vrac…" aria-label="Ton message pour Bouboule" maxlength="4000"></textarea>
+        <button type="submit" class="send" id="bbSend" aria-label="Envoyer à Bouboule" disabled>
+          <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </form>
     </section>
 
     <!-- OUTILS -->
@@ -645,6 +679,11 @@
           <button type="button" class="tool-card" data-open="ground">
             <span class="ico c2">🌿</span>
             <span><b>Ancrage 5-4-3-2-1</b><small>Quand l’angoisse monte : tes cinq sens te ramènent ici et maintenant.</small></span>
+            <svg class="go" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+          </button>
+          <button type="button" class="tool-card" data-go="bouboule">
+            <span class="ico c3">🧸</span>
+            <span><b>Vider mon sac avec Bouboule</b><small>Tout lâcher, en vrac, sans conseils et sans jugement. Bouboule écoute et fait des câlins.</small></span>
             <svg class="go" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
           </button>
           <button type="button" class="tool-card" data-open="joys">
@@ -721,6 +760,10 @@
     <button type="button" class="tab" data-tab="parler" aria-current="page">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-5 4v-4H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
       Parler
+    </button>
+    <button type="button" class="tab" data-tab="bouboule">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6.5" cy="7" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="7" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="13.5" r="7" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="15.5" r="1.4" fill="currentColor"/></svg>
+      Bouboule
     </button>
     <button type="button" class="tab" data-tab="outils">
       <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M3 12h18" fill="none" stroke="currentColor" stroke-width="2"/></svg>
@@ -1056,6 +1099,7 @@
     }
     $("newBtn").hidden = !(name === "parler" && !$("chat").hidden);
     if (name === "journal") renderJournal();
+    if (name === "bouboule") bbEnter();
     if (name === "moi") renderMe();
   }
   $("tabs").addEventListener("click", function (e) {
@@ -1119,8 +1163,8 @@
     var g = GREET[state.mood] || GREET.nuageux;
     var lines = [(state.name ? "Coucou " + state.name + ". " : "Coucou. ") + g[0]];
     if (!state.metBouboule) {
-      lines.push("Avant tout, je te présente quelqu’un : Bouboule, mon doudou 🧸");
-      lines.push({ role: "bouboule", text: "Coucou, moi c’est Bouboule ! 🧸 Je parle pas beaucoup, mais je fais les meilleurs câlins du monde. Je reste juste là, tout près, pendant que tu parles à Nuage." });
+      lines.push("Avant tout, je te présente quelqu’un : Bouboule, mon doudou 🧸 Quand tu as juste besoin de vider ton sac, sans conseils et sans jugement, tu peux aller tout lui raconter dans son onglet.");
+      lines.push({ role: "bouboule", text: "Coucou, moi c’est Bouboule ! 🧸 Avec moi tu peux tout lâcher : la colère, la tristesse, même les gros mots. J’écoute, je juge pas, et je fais les meilleurs câlins du monde." });
       state.metBouboule = true;
       save();
     }
@@ -1252,7 +1296,7 @@
   });
   $("chips").addEventListener("click", function (e) {
     var b = e.target.closest(".chip");
-    if (!b || b.id === "styleChip") return;
+    if (!b || b.id === "styleChip" || b.hasAttribute("data-go")) return;
     if (b.getAttribute("data-tool") === "breath") return openBreath();
     var s = b.getAttribute("data-say");
     if (s) send(s);
@@ -1650,6 +1694,140 @@
     $("joyDraw").textContent = "Et si tu t’offrais : " + lastJoy.charAt(0).toLowerCase() + lastJoy.slice(1) + " ?";
     $("joyDraw").hidden = false;
     markCare();
+  });
+
+  // --- Bouboule : le mode « vider son sac » ---
+  $("bbFace").innerHTML = teddySVG().replace('class="teddy-mini"', 'class="teddy-big"');
+  var bbBusy = false, bbStarted = false;
+  function bbScroll() { var t = $("bbThread"); t.scrollTop = t.scrollHeight; }
+  function bbBubble(role, text) {
+    var row = document.createElement("div");
+    var cls = role === "user" ? "me" : "bouboule";
+    var prev = $("bbThread").lastElementChild;
+    row.className = "row " + cls;
+    if (prev && prev.classList.contains(cls)) row.classList.add("cont");
+    row.innerHTML = (role === "user" ? "" : teddySVG()) + '<div class="bubble"></div>';
+    row.querySelector(".bubble").textContent = text;
+    $("bbThread").appendChild(row);
+    bbScroll();
+    return row;
+  }
+  function bbRender() {
+    $("bbThread").innerHTML = "";
+    state.boubou.forEach(function (m) { bbBubble(m.role, m.content); });
+  }
+  function bbGreet() {
+    var hi = "Coucou" + (state.name ? " " + state.name : "") + " ! C’est Bouboule 🧸 Ici tu peux vider ton sac : tout ce qui pèse, en vrac, sans filtre. Je t’écoute, je juge pas, et je fais des câlins. Vas-y, je suis là.";
+    state.boubou = [{ role: "assistant", content: hi }];
+    save();
+    bbRender();
+  }
+  function bbEnter() {
+    if (!bbStarted) {
+      bbStarted = true;
+      if (state.boubou.length) bbRender(); else bbGreet();
+    }
+    bbScroll();
+  }
+  function bbUpdateSend() { $("bbSend").disabled = bbBusy || !$("bbInput").value.trim(); }
+  $("bbInput").addEventListener("input", function () {
+    this.style.height = "auto";
+    this.style.height = Math.min(this.scrollHeight, 160) + "px";
+    bbUpdateSend();
+  });
+  $("bbInput").addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && !e.shiftKey && !e.isComposing && window.matchMedia("(pointer: fine)").matches) {
+      e.preventDefault();
+      $("bbForm").requestSubmit();
+    }
+  });
+  $("bbForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var text = $("bbInput").value.trim();
+    if (!text || bbBusy) return;
+    $("bbInput").value = "";
+    $("bbInput").style.height = "auto";
+    state.boubou.push({ role: "user", content: text });
+    state.boubou = state.boubou.slice(-40);
+    save();
+    bbBubble("user", text);
+    if (CRISIS.test(text)) $("bbCrisis").hidden = false;
+    markCare();
+    bbBusy = true;
+    bbUpdateSend();
+    $("bbHead").classList.add("think");
+    $("bbState").textContent = "Bouboule écrit…";
+    var row = bbBubble("assistant", "");
+    var bub = row.querySelector(".bubble");
+    bub.innerHTML = '<span class="typing" aria-label="Bouboule écrit"><b></b><b></b><b></b></span>';
+    var started = Date.now(), shown = "", reveal = null;
+    function render(t) {
+      shown = t;
+      if (reveal) return;
+      reveal = setTimeout(function draw() {
+        var i = shown.indexOf("⚠︎");
+        bub.textContent = (i >= 0 ? shown.slice(0, i) : shown).trim() || "…";
+        bbScroll();
+        reveal = setTimeout(draw, 60);
+      }, Math.max(0, 900 - (Date.now() - started)));
+    }
+    var p = payload();
+    p.persona = "bouboule";
+    p.messages = state.boubou;
+    Transport.chat(p, render).then(function (full) {
+      clearTimeout(reveal);
+      row.remove();
+      full = (full || "").trim();
+      var cut = full.indexOf("⚠︎");
+      if (cut >= 0 || !full) {
+        state.boubou.pop();
+        save();
+        $("bbInput").value = text;
+        $("bbThread").lastElementChild.remove();
+        bbBubble("assistant", cut >= 0 ? full.slice(cut + 2).trim() : "Bouboule n’a pas trouvé ses mots. Tu peux lui redire ?");
+        return;
+      }
+      state.boubou.push({ role: "assistant", content: full });
+      save();
+      bbBubble("assistant", full);
+    }).catch(function (e) {
+      clearTimeout(reveal);
+      row.remove();
+      var code = e && e.code;
+      if (e && e.text && code !== "refused") {
+        state.boubou.push({ role: "assistant", content: e.text });
+        save();
+        bbBubble("assistant", e.text);
+      } else {
+        state.boubou.pop();
+        save();
+        $("bbInput").value = text;
+        $("bbThread").lastElementChild.remove();
+      }
+      bbBubble("assistant", errorText(code));
+    }).then(function () {
+      bbBusy = false;
+      $("bbHead").classList.remove("think");
+      $("bbState").textContent = "Vide ton sac, je t’écoute 🧸";
+      bbUpdateSend();
+    });
+  });
+  var bbArmed = false, bbArmTimer = null;
+  $("bbNew").addEventListener("click", function () {
+    if (bbBusy) return;
+    var nb = $("bbNew");
+    if (state.boubou.some(function (m) { return m.role === "user"; }) && !bbArmed) {
+      bbArmed = true;
+      nb.classList.add("armed");
+      bbArmTimer = setTimeout(function () { bbArmed = false; nb.classList.remove("armed"); }, 3000);
+      toast("Appuie encore pour recommencer à zéro avec Bouboule");
+      return;
+    }
+    clearTimeout(bbArmTimer);
+    bbArmed = false;
+    nb.classList.remove("armed");
+    $("bbCrisis").hidden = true;
+    bbGreet();
   });
 
   // --- Journal météo ---

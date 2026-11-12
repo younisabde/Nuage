@@ -1,7 +1,7 @@
 // Nuage : route serveur qui transmet la conversation à Claude et renvoie la réponse en direct.
 // La clé ANTHROPIC_API_KEY reste côté serveur, jamais dans le navigateur.
 import Anthropic from "@anthropic-ai/sdk";
-import { SYSTEM_PROMPT, buildContext, cleanMessages, readBody } from "./_nuage.js";
+import { BOUBOULE_PROMPT, SYSTEM_PROMPT, buildContext, cleanMessages, readBody } from "./_nuage.js";
 
 const client = new Anthropic();
 
@@ -34,6 +34,7 @@ export default async function handler(req, res) {
   }
 
   const system = [{ type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }];
+  if (body.persona === "bouboule") system.push({ type: "text", text: BOUBOULE_PROMPT });
   const context = buildContext(body);
   if (context) system.push({ type: "text", text: context });
 
