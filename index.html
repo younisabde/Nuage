@@ -619,9 +619,8 @@
         </div>
         <div class="chips" id="chips">
           <button type="button" class="chip tool" id="styleChip"></button>
-          <button type="button" class="chip fire" data-open="release">🔥 Évacue ta colère</button>
+          <button type="button" class="chip fire" data-go="bouboule">🔥 Évacue ta colère avec Bouboule</button>
           <button type="button" class="chip tool" data-tool="breath">🫧 Respirer</button>
-          <button type="button" class="chip tool" data-go="bouboule">🧸 Vider mon sac avec Bouboule</button>
           <button type="button" class="chip" data-say="Je suis stressé·e et j’arrive pas à redescendre.">Je stresse</button>
           <button type="button" class="chip" data-say="Je me sens seul·e en ce moment.">Je me sens seul·e</button>
           <button type="button" class="chip" data-say="J’arrive pas à dormir, ça tourne dans ma tête.">Je dors mal</button>
@@ -642,7 +641,7 @@
         <span id="bbFace"></span>
         <div class="txt">
           <h2>Bouboule</h2>
-          <p id="bbState">Vide ton sac, je t’écoute 🧸</p>
+          <p id="bbState">Évacue ta colère avec moi 🔥</p>
         </div>
         <button type="button" class="icon-btn" id="bbNew" aria-label="Recommencer avec Bouboule" title="Recommencer">
           <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4h4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -653,8 +652,9 @@
         <strong>Tu n’es pas seul·e avec ça.</strong>
         Des humains sont là pour t’écouter tout de suite, gratuitement : appelle le <b>3114</b> (24h/24). En cas de danger immédiat : <b>112</b>.
       </div>
+      <div class="chips"><button type="button" class="chip fire" id="bbBurn">🔥 Tout brûler</button><button type="button" class="chip tool" data-open="breath">🫧 Souffler un grand coup</button></div>
       <form class="composer" id="bbForm">
-        <textarea id="bbInput" rows="1" placeholder="Lâche tout, en vrac…" aria-label="Ton message pour Bouboule" maxlength="4000"></textarea>
+        <textarea id="bbInput" rows="1" placeholder="Qu’est-ce qui t’énerve ?" aria-label="Ton message pour Bouboule" maxlength="4000"></textarea>
         <button type="submit" class="send" id="bbSend" aria-label="Envoyer à Bouboule" disabled>
           <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
@@ -666,9 +666,9 @@
       <div class="scroll">
         <h2 class="page-title">Ma boîte à outils</h2>
         <p class="page-lead">De petits exercices pour souffler, revenir au présent ou vider ce qui déborde.</p>
-        <button type="button" class="feature" data-open="release">
-          <span class="ico">🔥</span>
-          <span><b>Évacue ta colère</b><small>Écris tout ce qui t’énerve, même les gros mots, et regarde-le partir en fumée.</small></span>
+        <button type="button" class="feature" data-go="bouboule">
+          <span class="ico">🧸</span>
+          <span><b>Évacue ta colère avec Bouboule</b><small>Raconte-lui tout ce qui t’énerve, même les gros mots, puis brûlez tout ensemble 🔥</small></span>
         </button>
         <div class="tools">
           <button type="button" class="tool-card" data-open="breath">
@@ -679,11 +679,6 @@
           <button type="button" class="tool-card" data-open="ground">
             <span class="ico c2">🌿</span>
             <span><b>Ancrage 5-4-3-2-1</b><small>Quand l’angoisse monte : tes cinq sens te ramènent ici et maintenant.</small></span>
-            <svg class="go" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
-          </button>
-          <button type="button" class="tool-card" data-go="bouboule">
-            <span class="ico c3">🧸</span>
-            <span><b>Vider mon sac avec Bouboule</b><small>Tout lâcher, en vrac, sans conseils et sans jugement. Bouboule écoute et fait des câlins.</small></span>
             <svg class="go" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
           </button>
           <button type="button" class="tool-card" data-open="joys">
@@ -796,8 +791,9 @@
 
 <dialog id="releaseDlg" class="fire-dlg">
   <div id="fireWrite">
-    <h3>Évacue ta colère 🔥</h3>
-    <p class="sub">Écris tout ce qui t’énerve, en vrac, même les gros mots. Personne ne le lira : ce n’est ni gardé, ni envoyé.</p>
+    <span id="fireTeddy" style="display:block;width:56px;margin:0 auto 6px"></span>
+    <h3>On brûle tout 🔥</h3>
+    <p class="sub">Bouboule tient l’allumette. Tout ce qui t’énerve est là : ajoute ce que tu veux, puis regarde-le partir en fumée.</p>
     <div class="anger">
       <label for="angerBefore">Ta colère, là, sur 10 <output id="angerBeforeOut">7</output></label>
       <input type="range" id="angerBefore" min="0" max="10" value="7">
@@ -944,6 +940,7 @@
       wear: s.wear || [],
       plaisirs: s.plaisirs || [],
       metBouboule: !!s.metBouboule,
+      bbBurnAt: s.bbBurnAt || 0,
       boubou: s.boubou || [],
       voiceOn: s.voiceOn !== false,
     };
@@ -1163,8 +1160,8 @@
     var g = GREET[state.mood] || GREET.nuageux;
     var lines = [(state.name ? "Coucou " + state.name + ". " : "Coucou. ") + g[0]];
     if (!state.metBouboule) {
-      lines.push("Avant tout, je te présente quelqu’un : Bouboule, mon doudou 🧸 Quand tu as juste besoin de vider ton sac, sans conseils et sans jugement, tu peux aller tout lui raconter dans son onglet.");
-      lines.push({ role: "bouboule", text: "Coucou, moi c’est Bouboule ! 🧸 Avec moi tu peux tout lâcher : la colère, la tristesse, même les gros mots. J’écoute, je juge pas, et je fais les meilleurs câlins du monde." });
+      lines.push("Avant tout, je te présente quelqu’un : Bouboule, mon doudou 🧸 Quand la colère monte, va le voir dans son onglet : il t’aide à tout évacuer.");
+      lines.push({ role: "bouboule", text: "Coucou, moi c’est Bouboule ! 🧸 La colère, c’est mon rayon. Avec moi tu peux tout lâcher, même les gros mots, et après on brûle tout ensemble 🔥 Et à la fin, câlin." });
       state.metBouboule = true;
       save();
     }
@@ -1486,13 +1483,14 @@
   ["angerBefore", "angerAfter"].forEach(function (id) {
     $(id).addEventListener("input", function () { $(id + "Out").textContent = this.value; });
   });
-  function openRelease(start) {
+  var burnFromBB = false;
+  function openRelease(start, text) {
     $("fireWrite").hidden = false;
     $("burnCanvas").hidden = true;
     $("fireAfter").hidden = true;
     $("fireDone").hidden = true;
-    $("releaseText").value = "";
-    $("releaseBtn").disabled = true;
+    $("releaseText").value = text || "";
+    $("releaseBtn").disabled = !text;
     if (typeof start === "number") setRange("angerBefore", start);
     if (!$("releaseDlg").open) $("releaseDlg").showModal();
   }
@@ -1519,6 +1517,12 @@
   });
   $("angerOk").addEventListener("click", function () {
     var after = +$("angerAfter").value, d = angerBefore - after;
+    if (burnFromBB) {
+      burnFromBB = false;
+      $("releaseDlg").close();
+      bbAfterBurn(angerBefore, after);
+      return;
+    }
     $("fireResult").textContent = d > 0
       ? "Ta colère est passée de " + angerBefore + " à " + after + " 💪"
       : d < 0 ? "Elle est remontée à " + after + " sur 10." : "Toujours à " + after + " sur 10.";
@@ -1696,8 +1700,28 @@
     markCare();
   });
 
-  // --- Bouboule : le mode « vider son sac » ---
+  // --- Bouboule : le mode « Évacue ta colère » ---
   $("bbFace").innerHTML = teddySVG().replace('class="teddy-mini"', 'class="teddy-big"');
+  $("fireTeddy").innerHTML = teddySVG().replace('class="teddy-mini"', 'class="teddy-big" style="width:56px;height:56px"');
+  $("bbBurn").addEventListener("click", function () {
+    var from = state.bbBurnAt || 0;
+    var said = state.boubou.slice(from).filter(function (m) { return m.role === "user"; }).map(function (m) { return m.content; }).join("\n");
+    burnFromBB = true;
+    openRelease(undefined, said);
+  });
+  $("releaseDlg").addEventListener("close", function () { burnFromBB = false; });
+  function bbAfterBurn(before, after) {
+    var d = before - after;
+    var msg = d > 0
+      ? "Pfiou ! 🔥 Parti en fumée. Ta colère est passée de " + before + " à " + after + ", bien joué. Câlin de doudou 🧸 Il reste quelque chose sur le cœur ?"
+      : d < 0 ? "Elle est remontée à " + after + "… Viens là, câlin 🧸 Dis-moi ce qui revient, on va le sortir aussi."
+      : "Toujours à " + after + " sur 10… C’est ok, des fois ça met du temps. On continue d’en parler, ou on en brûle encore ? 🔥";
+    state.boubou.push({ role: "assistant", content: msg });
+    state.bbBurnAt = state.boubou.length;
+    save();
+    showTab("bouboule");
+    bbBubble("assistant", msg);
+  }
   var bbBusy = false, bbStarted = false;
   function bbScroll() { var t = $("bbThread"); t.scrollTop = t.scrollHeight; }
   function bbBubble(role, text) {
@@ -1717,8 +1741,9 @@
     state.boubou.forEach(function (m) { bbBubble(m.role, m.content); });
   }
   function bbGreet() {
-    var hi = "Coucou" + (state.name ? " " + state.name : "") + " ! C’est Bouboule 🧸 Ici tu peux vider ton sac : tout ce qui pèse, en vrac, sans filtre. Je t’écoute, je juge pas, et je fais des câlins. Vas-y, je suis là.";
+    var hi = "Coucou" + (state.name ? " " + state.name : "") + " ! C’est Bouboule 🧸 Ici on évacue ta colère. Raconte-moi ce qui t’énerve, en vrac, même les gros mots. Quand tu veux, on brûle tout ça avec le bouton 🔥";
     state.boubou = [{ role: "assistant", content: hi }];
+    state.bbBurnAt = 0;
     save();
     bbRender();
   }
@@ -1748,7 +1773,10 @@
     $("bbInput").value = "";
     $("bbInput").style.height = "auto";
     state.boubou.push({ role: "user", content: text });
-    state.boubou = state.boubou.slice(-40);
+    if (state.boubou.length > 40) {
+      state.bbBurnAt = Math.max(0, (state.bbBurnAt || 0) - (state.boubou.length - 40));
+      state.boubou = state.boubou.slice(-40);
+    }
     save();
     bbBubble("user", text);
     if (CRISIS.test(text)) $("bbCrisis").hidden = false;
@@ -1808,7 +1836,7 @@
     }).then(function () {
       bbBusy = false;
       $("bbHead").classList.remove("think");
-      $("bbState").textContent = "Vide ton sac, je t’écoute 🧸";
+      $("bbState").textContent = "Évacue ta colère avec moi 🔥";
       bbUpdateSend();
     });
   });
