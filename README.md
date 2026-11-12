@@ -15,6 +15,9 @@ Un espace pour vider son sac. On raconte ce qui ne va pas, et Nuage répond avec
 - **Sécurité** : bouton **Aide** toujours visible (3114, 112/15, SOS Amitié, Fil Santé Jeunes, 3919, 119), bandeau d'aide immédiat si un message contient des mots de détresse, consignes de crise dans la personnalité de Nuage.
 - **Confidentialité** : conversation, carnet et journal sont stockés seulement dans le navigateur (`localStorage`). Le serveur ne garde rien.
 
+### Installer l'appli sur un téléphone
+Une fois en ligne, n'importe qui peut ouvrir l'adresse et ajouter Nuage à son écran d'accueil : dans **Mon Nuage**, le bouton **📲 Installer Nuage** lance l'installation sur Android et explique les étapes sur iPhone (Safari → Partager → Sur l'écran d'accueil). Le bouton **💌 Partager Nuage** envoie le lien. L'appli s'ouvre en plein écran, avec son icône, et reste accessible hors connexion (sauf les réponses de l'IA).
+
 ### Fichiers
 | Fichier | Rôle |
 |---|---|
@@ -22,6 +25,7 @@ Un espace pour vider son sac. On raconte ce qui ne va pas, et Nuage répond avec
 | `api/_nuage.js` | Personnalité de Nuage et de Bouboule, consignes du carnet et contexte envoyé à l'IA. C'est le fichier à modifier pour changer leur ton |
 | `api/chat.js` | Route serveur : appelle Claude et renvoie la réponse en direct |
 | `api/memo.js` | Route serveur : met à jour le carnet |
+| `sw.js`, `manifest.webmanifest`, `icon-*.png` | Ce qui permet d'installer Nuage comme une appli |
 | `dev-server.js` | Petit serveur pour tester en local |
 
 ### Lancer en local

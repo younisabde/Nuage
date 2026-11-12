@@ -11,7 +11,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Nuage">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="icon.svg">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -489,6 +490,9 @@
   .danger { border: 1px solid var(--warn-line); background: var(--warn-bg); color: var(--warn-ink); border-radius: 999px; padding: 11px 20px; font-weight: 800; cursor: pointer; }
   .row-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 
+  .steps { margin: 0 0 20px; padding-left: 22px; display: grid; gap: 10px; font-size: 16px; }
+  .steps b { color: var(--soft-ink); }
+
   .toast {
     position: fixed;
     left: 50%;
@@ -810,6 +814,14 @@
           <p class="hint">Chaque jour où tu prends soin de toi (une météo notée, un outil, une conversation), Nuage gagne de quoi se faire beau. Il ne perd jamais rien si tu t’absentes. Touche un accessoire pour le mettre ou l’enlever.</p>
           <div class="accs" id="accs"></div>
         </div>
+        <div class="section" id="installSection">
+          <h3>Nuage sur ton écran d’accueil</h3>
+          <p class="hint" id="installHint">Installe Nuage comme une vraie appli, et partage-le à quelqu’un qui en a besoin.</p>
+          <div class="row-actions">
+            <button type="button" class="primary" id="installBtn" style="width:auto">📲 Installer Nuage</button>
+            <button type="button" class="secondary" id="shareBtn">💌 Partager Nuage</button>
+          </div>
+        </div>
         <div class="section">
           <h3>Ce que je retiens de toi</h3>
           <p class="hint">Pour ne pas te faire tout répéter. C’est stocké seulement sur ton appareil, et tu peux effacer ce que tu veux.</p>
@@ -909,6 +921,13 @@
   <div style="height:14px"></div>
   <button type="button" class="primary btn-center" id="joyPick">Tire-m’en un au hasard 🎲</button>
   <button type="button" class="ghost" data-close>Fermer</button>
+</dialog>
+
+<dialog id="installDlg">
+  <h3>Ajouter Nuage à l’écran d’accueil</h3>
+  <p class="sub" id="installIntro"></p>
+  <ol class="steps" id="installSteps"></ol>
+  <button type="button" class="primary btn-center" data-close>Compris</button>
 </dialog>
 
 <dialog id="helpDlg">
@@ -2154,6 +2173,60 @@
     renderMe();
     toast("Tout est effacé. Nuage repart de zéro.");
   });
+
+  // --- Installer et partager ---
+  var installEvt = null;
+  var standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+  var embedded = window.top !== window || window.NuageTransport;
+  if (embedded) $("installSection").hidden = true;
+  window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); installEvt = e; });
+  window.addEventListener("appinstalled", function () { installEvt = null; renderInstall(); toast("Nuage est installé 💜"); });
+  function renderInstall() {
+    if (standalone) {
+      $("installBtn").hidden = true;
+      $("installHint").textContent = "Nuage est déjà sur ton écran d’accueil. Tu peux le partager à quelqu’un qui en a besoin.";
+    }
+  }
+  renderInstall();
+  var IOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  function showSteps(intro, steps) {
+    $("installIntro").textContent = intro;
+    var ol = $("installSteps");
+    ol.innerHTML = "";
+    steps.forEach(function (st) { var li = document.createElement("li"); li.innerHTML = st; ol.appendChild(li); });
+    $("installDlg").showModal();
+  }
+  $("installBtn").addEventListener("click", function () {
+    if (installEvt) {
+      installEvt.prompt();
+      installEvt.userChoice.then(function () { installEvt = null; });
+      return;
+    }
+    if (IOS) {
+      showSteps("Sur iPhone et iPad, ça se fait depuis Safari :", [
+        "Ouvre cette page dans <b>Safari</b>.",
+        "Touche le bouton <b>Partager</b> (le carré avec une flèche vers le haut).",
+        "Choisis <b>Sur l’écran d’accueil</b>, puis <b>Ajouter</b>.",
+      ]);
+    } else {
+      showSteps("Sur Android, avec Chrome :", [
+        "Touche le menu <b>⋮</b> en haut à droite.",
+        "Choisis <b>Installer l’application</b> ou <b>Ajouter à l’écran d’accueil</b>.",
+        "Confirme : l’icône de Nuage apparaît avec tes autres applis.",
+      ]);
+    }
+  });
+  $("shareBtn").addEventListener("click", function () {
+    var url = location.origin + "/";
+    var data = { title: "Nuage", text: "Nuage, un espace pour vider son sac quand ça ne va pas. Ça m’a fait du bien :", url: url };
+    if (navigator.share) { navigator.share(data).catch(function () {}); return; }
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url).then(function () { toast("Lien copié : " + url); }, function () { toast(url); });
+    } else toast(url);
+  });
+  if ("serviceWorker" in navigator && location.protocol === "https:" && !embedded) {
+    navigator.serviceWorker.register("sw.js").catch(function () {});
+  }
 
   // --- Aide et fermeture des fenêtres ---
   $("sosBtn").addEventListener("click", function () { $("helpDlg").showModal(); });
