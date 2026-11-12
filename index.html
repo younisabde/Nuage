@@ -1,0 +1,2177 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<title>Nuage</title>
+<meta name="description" content="Un espace pour dire ce qui pèse et repartir un peu plus léger.">
+<meta name="theme-color" content="#F6F4FB" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16141F" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Nuage">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Nunito:wght@500;600;700;800&display=swap">
+<style>
+  /* Layout: one-screen app. Header, then one of four pages (Parler, Outils, Journal, Mon Nuage), bottom tab bar. */
+  :root {
+    --bg: #F2F6FF;
+    --sky: #DCE6FF;
+    --surface: #FFFFFF;
+    --fg: #1E2342;
+    --muted: #5F678C;
+    --line: #DEE4F5;
+    --me: #4F63F0;
+    --me-2: #8A5CF6;
+    --on-me: #FFFFFF;
+    --bot: #FFFFFF;
+    --cloud: #FFFFFF;
+    --cloud-shade: #D4DCFA;
+    --cloud-line: #BFCBF5;
+    --cheek: #FFB3C1;
+    --face: #2E3466;
+    --soft: #E7ECFF;
+    --soft-ink: #3242C4;
+    --fire: #FF6A3D;
+    --fire-2: #FF3D6E;
+    --fire-soft: #FFE9E1;
+    --fire-ink: #B5320E;
+    --mint: #20A98B;
+    --mint-soft: #DDF5EE;
+    --sun-soft: #FFF2D6;
+    --warn-bg: #FFF1E6;
+    --warn-ink: #8A3B00;
+    --warn-line: #FFD2B0;
+    --sun: #F2B33D;
+    --rain: #5C8BE0;
+    --storm: #8C5BD6;
+    --fog: #9B98A8;
+    --cloudy: #B9C3D6;
+    --display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+    --text: "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --gut: max(20px, env(safe-area-inset-left, 0px));
+    --gut-r: max(20px, env(safe-area-inset-right, 0px));
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1330;
+      --sky: #1A2150;
+      --surface: #1A1F45;
+      --fg: #EEF1FF;
+      --muted: #9EA6CC;
+      --line: #2B3263;
+      --me: #6F7FFF;
+      --me-2: #A07BFF;
+      --bot: #20265A;
+      --cloud: #F2F4FF;
+      --cloud-shade: #B8C2F2;
+      --cloud-line: #8E9CE8;
+      --soft: #252D66;
+      --soft-ink: #C5CDFF;
+      --fire-soft: #3D2120;
+      --fire-ink: #FFB49A;
+      --mint-soft: #153A38;
+      --sun-soft: #3A3018;
+      --warn-bg: #3A2416;
+      --warn-ink: #FFC9A1;
+      --warn-line: #5A3820;
+      --cloudy: #6E7890;
+      --fog: #7A7788;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1330;
+    --sky: #1A2150;
+    --surface: #1A1F45;
+    --fg: #EEF1FF;
+    --muted: #9EA6CC;
+    --line: #2B3263;
+    --me: #6F7FFF;
+    --me-2: #A07BFF;
+    --bot: #20265A;
+    --cloud: #F2F4FF;
+    --cloud-shade: #B8C2F2;
+    --cloud-line: #8E9CE8;
+    --soft: #252D66;
+    --soft-ink: #C5CDFF;
+    --fire-soft: #3D2120;
+    --fire-ink: #FFB49A;
+    --mint-soft: #153A38;
+    --sun-soft: #3A3018;
+    --warn-bg: #3A2416;
+    --warn-ink: #FFC9A1;
+    --warn-line: #5A3820;
+    --cloudy: #6E7890;
+    --fog: #7A7788;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  [hidden] { display: none !important; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: linear-gradient(180deg, var(--sky) 0, var(--bg) 320px) var(--bg) no-repeat;
+    color: var(--fg);
+    font: 500 16px/1.6 var(--text);
+    -webkit-text-size-adjust: 100%;
+  }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--me); outline-offset: 2px; }
+  .app {
+    max-width: 640px;
+    margin: 0 auto;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  main { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .page { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .scroll { flex: 1; overflow-y: auto; padding: 28px var(--gut-r) 40px var(--gut); }
+  .page-title { margin: 0 0 6px; font: 800 28px/1.15 var(--display); letter-spacing: -.02em; text-wrap: balance; }
+  .page-lead { margin: 0 0 28px; color: var(--muted); }
+  .section { margin-bottom: 36px; }
+  .section h3 { margin: 0 0 4px; font: 800 19px/1.25 var(--display); }
+  .section .hint { margin: 0 0 14px; color: var(--muted); font-size: 15px; }
+
+  /* --- Nuage, le personnage --- */
+  .cloud { flex: none; width: var(--size, 46px); height: calc(var(--size, 46px) * .78); display: block; overflow: visible; }
+  .cloud .body { fill: var(--cloud); stroke: var(--cloud-line); stroke-width: 3; }
+  .cloud .shade { fill: var(--cloud-shade); opacity: .55; }
+  .cloud .eye { fill: var(--face); transform-box: fill-box; transform-origin: center; animation: blink 6s infinite; }
+  .cloud .mouth { fill: none; stroke: var(--face); stroke-width: 4; stroke-linecap: round; }
+  .cloud .cheek { fill: var(--cheek); opacity: .7; }
+  .float { animation: float 5s ease-in-out infinite; }
+  .talking .cloud { animation: bob .9s ease-in-out infinite; }
+  @keyframes float { 50% { transform: translateY(-4px); } }
+  @keyframes bob { 50% { transform: translateY(-3px) scale(1.03); } }
+  @keyframes blink { 0%, 46%, 50%, 100% { transform: scaleY(1); } 48% { transform: scaleY(.1); } }
+
+  /* --- En-tête --- */
+  header {
+    background: color-mix(in srgb, var(--surface) 70%, transparent);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px var(--gut-r) 12px var(--gut);
+    border-bottom: 1px solid var(--line);
+  }
+  header .who { flex: 1; min-width: 0; }
+  header h1 { margin: 0; font: 800 20px/1.1 var(--display); letter-spacing: -.01em; }
+  header p { margin: 2px 0 0; font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .icon-btn {
+    flex: none;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: 999px;
+    height: 40px;
+    min-width: 40px;
+    padding: 0 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+  .icon-btn.sos, .icon-btn.armed { color: var(--warn-ink); background: var(--warn-bg); border-color: var(--warn-line); }
+
+  /* --- Barre de menu --- */
+  .tabs {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    border-top: 1px solid var(--line);
+    background: var(--surface);
+    padding: 6px var(--gut-r) calc(env(safe-area-inset-bottom, 0px) + 6px) var(--gut);
+  }
+  .tab {
+    border: 0;
+    background: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 6px 2px;
+    border-radius: 14px;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .tab svg { width: 24px; height: 24px; }
+  .tab[aria-current="page"] { color: var(--me); background: var(--soft); }
+
+  /* --- Accueil --- */
+  .welcome { text-align: center; display: flex; flex-direction: column; align-items: center; }
+  .welcome .hero { --size: 128px; margin: 0 0 18px; display: block; }
+  .welcome .page-lead { max-width: 26em; }
+  .field { width: 100%; max-width: 440px; text-align: left; margin-bottom: 28px; }
+  .field label, .field .label { display: block; font-weight: 800; margin-bottom: 10px; }
+  .field .opt { font-weight: 500; color: var(--muted); }
+  input[type="text"], .field input, textarea.box {
+    width: 100%;
+    font: inherit;
+    padding: 13px 16px;
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--fg);
+  }
+  .moods { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .pick {
+    border: 2px solid var(--line);
+    background: var(--surface);
+    border-radius: 18px;
+    padding: 12px 4px 10px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--muted);
+    transition: transform .15s, border-color .15s;
+  }
+  .pick span { font-size: 26px; line-height: 1; }
+  .pick:active { transform: scale(.96); }
+  .pick[aria-pressed="true"] { border-color: var(--me); color: var(--fg); background: var(--soft); }
+  .styles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .styles .pick { font-size: 13px; padding: 14px 6px 12px; text-align: center; line-height: 1.25; }
+  .primary {
+    border: 0;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--me), var(--me-2));
+    color: var(--on-me);
+    font-weight: 800;
+    font-size: 17px;
+    padding: 15px 28px;
+    cursor: pointer;
+    width: 100%;
+    max-width: 440px;
+  }
+  .primary:disabled { opacity: .45; cursor: default; }
+  .secondary {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: 999px;
+    font-weight: 800;
+    padding: 12px 20px;
+    cursor: pointer;
+  }
+  .fine { font-size: 13px; color: var(--muted); max-width: 30em; margin: 22px 0 0; }
+  .fine b { color: var(--fg); }
+
+  /* --- Conversation --- */
+  .thread {
+    flex: 1;
+    overflow-y: auto;
+    padding: 22px var(--gut-r) 10px var(--gut);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .row { display: flex; gap: 8px; align-items: flex-end; animation: pop .25s ease-out; }
+  .row.me { justify-content: flex-end; }
+  .row .cloud { --size: 34px; }
+  .row.me .cloud { display: none; }
+  .row.cont .cloud { visibility: hidden; }
+  @keyframes pop { from { opacity: 0; transform: translateY(6px); } }
+  .bubble {
+    max-width: min(82%, 30em);
+    padding: 11px 15px;
+    border-radius: 20px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .bot .bubble { background: var(--bot); border: 1px solid var(--line); border-bottom-left-radius: 6px; }
+  .me .bubble { background: linear-gradient(135deg, var(--me), var(--me-2)); color: var(--on-me); border-bottom-right-radius: 6px; }
+  .note { align-self: center; font-size: 13px; font-weight: 700; color: var(--soft-ink); background: var(--soft); border-radius: 999px; padding: 4px 12px; animation: pop .25s ease-out; }
+  .typing { display: inline-flex; gap: 4px; padding: 4px 2px; }
+  .typing b { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); opacity: .5; animation: dot 1.2s infinite; }
+  .typing b:nth-child(2) { animation-delay: .15s; }
+  .typing b:nth-child(3) { animation-delay: .3s; }
+  @keyframes dot { 30% { transform: translateY(-4px); opacity: 1; } }
+
+  .crisis {
+    margin: 0 var(--gut-r) 8px var(--gut);
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: var(--warn-bg);
+    color: var(--warn-ink);
+    border: 1px solid var(--warn-line);
+    font-size: 14px;
+  }
+  .crisis strong { display: block; font-size: 15px; margin-bottom: 4px; }
+  .crisis .x { float: right; border: 0; background: none; cursor: pointer; color: inherit; font-size: 20px; line-height: 1; padding: 0 0 4px 8px; }
+
+  .chips { display: flex; gap: 8px; overflow-x: auto; padding: 4px var(--gut-r) 10px var(--gut); scrollbar-width: none; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip {
+    flex: none;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: 999px;
+    padding: 7px 14px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .chip.tool { background: var(--soft); color: var(--soft-ink); border-color: transparent; }
+
+  .composer {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    padding: 10px var(--gut-r) 12px var(--gut);
+    border-top: 1px solid var(--line);
+  }
+  .composer textarea {
+    flex: 1;
+    min-width: 0;
+    resize: none;
+    font: inherit;
+    max-height: 160px;
+    padding: 11px 16px;
+    border-radius: 22px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--fg);
+    line-height: 1.4;
+  }
+  .send {
+    flex: none;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 0;
+    background: var(--me);
+    color: var(--on-me);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+  }
+  .send:disabled { opacity: .4; cursor: default; }
+
+  /* --- Outils --- */
+  .tools { display: grid; gap: 14px; }
+  .tool-card {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    text-align: left;
+    width: 100%;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: 22px;
+    padding: 18px;
+    cursor: pointer;
+  }
+  .tool-card .ico { flex: none; width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; font-size: 26px; background: var(--soft); }
+  .tool-card b { display: block; font: 800 17px/1.3 var(--display); }
+  .tool-card small { display: block; color: var(--muted); font-size: 14px; line-height: 1.45; margin-top: 2px; }
+  .tool-card .go { margin-left: auto; color: var(--muted); flex: none; }
+
+  /* --- Fenêtres --- */
+  dialog {
+    border: 0;
+    border-radius: 26px;
+    padding: 26px 20px 18px;
+    width: min(92vw, 460px);
+    max-height: 90vh;
+    background: var(--surface);
+    color: var(--fg);
+  }
+  dialog::backdrop { background: rgba(20, 12, 30, .45); }
+  dialog h3 { margin: 0 0 6px; font: 800 22px/1.2 var(--display); text-align: center; text-wrap: balance; }
+  dialog .sub { margin: 0 0 18px; color: var(--muted); text-align: center; font-size: 15px; }
+  .breath-stage { height: 220px; display: grid; place-items: center; }
+  .breath { --size: 96px; transition: transform 4s ease-in-out; }
+  .breath-label { font: 700 20px var(--display); min-height: 1.5em; margin-bottom: 16px; text-align: center; }
+  .help-list { display: grid; gap: 8px; margin: 4px 0 14px; }
+  .help-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    color: var(--fg);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 10px 14px;
+    text-decoration: none;
+  }
+  .help-item b { font: 800 18px var(--display); color: var(--warn-ink); white-space: nowrap; user-select: all; }
+  .help-item small { display: block; color: var(--muted); font-size: 13px; }
+  .ghost { border: 0; background: none; color: var(--muted); font-weight: 800; cursor: pointer; padding: 10px; display: block; margin: 6px auto 0; }
+  .btn-center { display: block; margin: 0 auto; }
+
+  /* Ancrage 5-4-3-2-1 */
+  .ground-step { text-align: center; }
+  .ground-big { font: 800 64px/1 var(--display); color: var(--me); margin: 6px 0 4px; }
+  .ground-what { font: 800 20px/1.3 var(--display); margin: 0 0 6px; }
+  .ground-dots { display: flex; justify-content: center; gap: 10px; margin: 22px 0; flex-wrap: wrap; }
+  .ground-dots button { width: 44px; height: 44px; border-radius: 50%; border: 2px dashed var(--cloud-line); background: none; cursor: pointer; font-size: 20px; }
+  .ground-dots button.on { border-style: solid; border-color: var(--me); background: var(--soft); }
+  .progress { height: 6px; border-radius: 999px; background: var(--line); overflow: hidden; margin: 0 0 18px; }
+  .progress i { display: block; height: 100%; background: var(--me); border-radius: inherit; transition: width .3s; }
+
+  /* Écrire et lâcher */
+  textarea.box { min-height: 150px; resize: vertical; line-height: 1.5; }
+  .release-stage { position: relative; min-height: 150px; border-radius: 16px; padding: 13px 16px; background: var(--bg); overflow: hidden; }
+  .release-stage span { display: inline-block; white-space: pre; animation: drift 2.6s ease-in forwards; }
+  @keyframes drift {
+    to { transform: translate(var(--dx), -140px) rotate(var(--rot)); opacity: 0; filter: blur(6px); }
+  }
+  .done-msg { text-align: center; color: var(--muted); margin: 14px 0 4px; }
+
+  /* Petits plaisirs */
+  .list { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 8px; }
+  .list li { display: flex; gap: 10px; align-items: center; border: 1px solid var(--line); background: var(--surface); border-radius: 16px; padding: 11px 14px; font-size: 15px; }
+  .list li span { flex: 1; min-width: 0; }
+  .list li button { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 20px; line-height: 1; padding: 0 2px; }
+  .add-row { display: flex; gap: 8px; }
+  .add-row input { flex: 1; min-width: 0; }
+  .suggest { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .draw { margin: 16px 0 6px; padding: 18px; border-radius: 20px; background: var(--soft); text-align: center; font: 800 19px/1.35 var(--display); color: var(--soft-ink); }
+  .empty { color: var(--muted); text-align: center; font-size: 15px; padding: 10px 0; }
+
+  /* Journal météo */
+  .cal-head, .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .cal-head { font-size: 11px; font-weight: 800; color: var(--muted); text-align: center; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px; }
+  .day { aspect-ratio: 1; max-width: 100%; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); display: grid; place-items: center; font-size: 20px; position: relative; }
+  .day.future { opacity: .35; }
+  .day.today { outline: 2px solid var(--me); outline-offset: 1px; }
+  .day .n { position: absolute; top: 2px; left: 5px; font-size: 9px; font-weight: 800; color: var(--muted); }
+  .day.soleil { background: color-mix(in srgb, var(--sun) 28%, var(--surface)); }
+  .day.nuageux { background: color-mix(in srgb, var(--cloudy) 35%, var(--surface)); }
+  .day.pluie { background: color-mix(in srgb, var(--rain) 28%, var(--surface)); }
+  .day.orage { background: color-mix(in srgb, var(--storm) 28%, var(--surface)); }
+  .day.brouillard { background: color-mix(in srgb, var(--fog) 30%, var(--surface)); }
+  .bilan { padding: 16px 18px; border-radius: 20px; background: var(--soft); font-size: 15px; }
+  .bilan b { color: var(--soft-ink); }
+  .counts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counts span { background: var(--surface); border-radius: 999px; padding: 2px 10px; }
+
+  /* Mon Nuage */
+  .me-hero { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 6px 0 4px; }
+  .me-hero .big { --size: 170px; margin-bottom: 14px; }
+  .me-hero .days { font: 800 22px/1.2 var(--display); margin: 0; }
+  .me-hero .next { color: var(--muted); margin: 4px 0 14px; font-size: 15px; }
+  .me-hero .progress { width: min(100%, 320px); }
+  .accs { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 10px; }
+  .acc {
+    border: 2px solid var(--line);
+    background: var(--surface);
+    border-radius: 20px;
+    padding: 14px 6px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    color: var(--fg);
+  }
+  .acc .e { font-size: 28px; line-height: 1; }
+  .acc small { font-weight: 700; color: var(--muted); font-size: 12px; }
+  .acc[aria-pressed="true"] { border-color: var(--me); background: var(--soft); }
+  .acc[aria-pressed="true"] small { color: var(--soft-ink); }
+  .acc:disabled { cursor: default; opacity: .6; }
+  .danger { border: 1px solid var(--warn-line); background: var(--warn-bg); color: var(--warn-ink); border-radius: 999px; padding: 11px 20px; font-weight: 800; cursor: pointer; }
+  .row-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 92px);
+    transform: translateX(-50%);
+    background: var(--fg);
+    color: var(--bg);
+    padding: 12px 18px;
+    border-radius: 18px;
+    font-weight: 800;
+    font-size: 15px;
+    width: max-content;
+    max-width: calc(100% - 40px);
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(20, 12, 30, .25);
+    animation: pop .3s ease-out;
+    z-index: 20;
+  }
+
+  /* Mise en avant : Évacue ta colère, Bouboule */
+  .feature {
+    width: 100%;
+    border: 0;
+    text-align: left;
+    color: #fff;
+    border-radius: 26px;
+    padding: 22px 20px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    cursor: pointer;
+    background: linear-gradient(135deg, var(--fire), var(--fire-2));
+    box-shadow: 0 12px 30px color-mix(in srgb, var(--fire-2) 30%, transparent);
+    margin-bottom: 16px;
+  }
+  .feature .ico { flex: none; width: 60px; height: 60px; border-radius: 18px; background: rgba(255,255,255,.22); display: grid; place-items: center; font-size: 32px; }
+  .feature b { display: block; font: 800 21px/1.2 var(--display); }
+  .feature small { display: block; font-size: 15px; line-height: 1.45; opacity: .95; margin-top: 4px; }
+  .feature.teddy { background: linear-gradient(135deg, #C98A4E, #E7A96B); box-shadow: 0 12px 30px rgba(201, 138, 78, .3); max-width: 440px; margin: 6px 0 0; }
+  .chip.fire { background: var(--fire-soft); color: var(--fire-ink); border-color: transparent; }
+  .tool-card .ico.c1 { background: var(--soft); }
+  .tool-card .ico.c2 { background: var(--mint-soft); }
+  .tool-card .ico.c3 { background: var(--sun-soft); }
+
+  /* Évacue ta colère */
+  dialog.fire-dlg { padding-top: 24px; }
+  .anger { margin: 4px 0 18px; padding: 14px 16px; border-radius: 18px; background: var(--fire-soft); }
+  .anger label { display: flex; justify-content: space-between; align-items: center; font-weight: 800; color: var(--fire-ink); margin-bottom: 8px; }
+  .anger output { font: 800 22px/1 var(--display); font-variant-numeric: tabular-nums; }
+  .anger input[type="range"] { width: 100%; accent-color: var(--fire); }
+  .fire-btn { background: linear-gradient(135deg, var(--fire), var(--fire-2)); }
+  .burn { display: block; width: 100%; border-radius: 18px; background: radial-gradient(120% 90% at 50% 100%, #3A1A2E 0%, #160F26 60%, #0E0A1A 100%); }
+  .shake { animation: shake .5s ease-in-out; }
+  @keyframes shake { 20% { transform: translateX(-6px) rotate(-.6deg); } 40% { transform: translateX(6px) rotate(.6deg); } 60% { transform: translateX(-4px); } 80% { transform: translateX(3px); } }
+  .result { text-align: center; font: 800 20px/1.35 var(--display); margin: 8px 0 6px; text-wrap: balance; }
+  .result-sub { text-align: center; color: var(--muted); margin: 0 0 18px; }
+  .stack { display: grid; gap: 8px; }
+
+  /* Bouboule */
+  .bb-head { display: flex; align-items: center; gap: 12px; padding: 14px var(--gut-r) 6px var(--gut); }
+  .bb-head .bb-stage { flex: none; }
+  .bb-head .txt { flex: 1; min-width: 0; }
+  .bb-head h2 { margin: 0; font: 800 24px/1.15 var(--display); }
+  .bb-head p { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
+  .bb-head .state { font-weight: 800; color: var(--soft-ink); }
+  .bb-head .btns { display: flex; gap: 6px; }
+  .bb-stage { position: relative; width: 108px; height: 108px; display: grid; place-items: center; }
+  .bb-ring { position: absolute; inset: 2px; border-radius: 50%; border: 3px solid var(--me); opacity: 0; }
+  .bb-stage.listen .bb-ring { animation: ring 1.4s ease-out infinite; }
+  @keyframes ring { 0% { transform: scale(.85); opacity: .6; } 100% { transform: scale(1.15); opacity: 0; } }
+  .teddy { width: 100px; height: 100px; overflow: visible; animation: breathe 4s ease-in-out infinite; }
+  @keyframes breathe { 50% { transform: scale(1.03); } }
+  .teddy .ear { transform-box: fill-box; transform-origin: 50% 100%; }
+  .listen .teddy .ear.l { animation: wiggleL .8s ease-in-out infinite; }
+  .listen .teddy .ear.r { animation: wiggleR .8s ease-in-out infinite; }
+  @keyframes wiggleL { 50% { transform: rotate(-10deg); } }
+  @keyframes wiggleR { 50% { transform: rotate(10deg); } }
+  .teddy .eyes { transition: transform .3s; }
+  .think .teddy .eyes { transform: translate(5px, -5px); }
+  .teddy .blink { transform-box: fill-box; transform-origin: center; animation: blink 5s infinite; }
+  .teddy .mouth-open { transform-box: fill-box; transform-origin: 50% 0; opacity: 0; }
+  .talk .teddy .smile { opacity: 0; }
+  .talk .teddy .mouth-open { opacity: 1; animation: talk .28s ease-in-out infinite alternate; }
+  @keyframes talk { from { transform: scaleY(.25); } to { transform: scaleY(1); } }
+  .think .teddy { animation: tilt 1.6s ease-in-out infinite; }
+  @keyframes tilt { 50% { transform: rotate(-4deg); } }
+
+  .bb-thread { flex: 1; min-height: 0; overflow-y: auto; padding: 10px var(--gut-r) 12px var(--gut); display: flex; flex-direction: column; gap: 12px; }
+  .bb-msg { max-width: 86%; padding: 12px 16px; border-radius: 22px; font-size: 17px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; animation: pop .25s ease-out; }
+  .bb-msg.bear { align-self: flex-start; background: #FFF4E6; color: #4A2E1E; border: 1px solid #F2D9BC; border-bottom-left-radius: 6px; }
+  .bb-msg.you { align-self: flex-end; background: linear-gradient(135deg, var(--me), var(--me-2)); color: #fff; border-bottom-right-radius: 6px; }
+  .bb-msg.you.live { opacity: .75; font-style: italic; }
+  .bb-msg.err { align-self: center; max-width: 92%; font-size: 14px; background: var(--warn-bg); color: var(--warn-ink); border: 1px solid var(--warn-line); border-radius: 16px; text-align: center; }
+  .bb-msg .typing b { background: #B57A42; }
+  .bb-play { display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; border: 0; background: none; color: #9B6331; font-size: 13px; font-weight: 800; cursor: pointer; padding: 2px 0; }
+
+  .bb-dock { border-top: 1px solid var(--line); padding: 12px var(--gut-r) 14px var(--gut); display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .mic {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    border: 0;
+    cursor: pointer;
+    color: #fff;
+    background: linear-gradient(135deg, var(--me), var(--me-2));
+    box-shadow: 0 10px 24px color-mix(in srgb, var(--me) 40%, transparent);
+    display: grid;
+    place-items: center;
+    transition: transform .15s;
+  }
+  .mic:active { transform: scale(.95); }
+  .mic.on { background: linear-gradient(135deg, var(--fire), var(--fire-2)); }
+  .mic:disabled { opacity: .5; cursor: default; }
+  .mic-label { font-weight: 800; font-size: 15px; min-height: 1.5em; text-align: center; }
+  .bb-type { width: 100%; display: flex; gap: 8px; }
+  .bb-type input { flex: 1; min-width: 0; }
+  .bb-hint { font-size: 13px; color: var(--muted); text-align: center; margin: 0; max-width: 30em; }
+  .bb-dock .crisis { margin: 0; width: 100%; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header id="head">
+    <span data-cloud></span>
+    <div class="who">
+      <h1>Nuage</h1>
+      <p id="status">à ton écoute</p>
+    </div>
+    <button type="button" class="icon-btn sos" id="sosBtn" aria-label="Aide urgente">
+      <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z" fill="currentColor"/></svg>
+      Aide
+    </button>
+    <button type="button" class="icon-btn" id="newBtn" aria-label="Nouvelle conversation" title="Nouvelle conversation" hidden></button>
+  </header>
+
+  <main>
+    <!-- PARLER -->
+    <section class="page" id="page-parler" data-page="parler">
+      <div class="scroll" id="welcome">
+        <div class="welcome">
+          <span class="float hero" data-cloud></span>
+          <h2 class="page-title" id="hello">Salut, moi c’est Nuage.</h2>
+          <p class="page-lead" id="lead">Ici tu peux dire ce qui pèse, même si c’est flou, même si ça te paraît « pas si grave ». On en parle à ton rythme.</p>
+
+          <div class="field">
+            <label for="name">Comment je peux t’appeler ? <span class="opt">(facultatif)</span></label>
+            <input id="name" type="text" autocomplete="given-name" maxlength="40" placeholder="Ton prénom ou un surnom">
+          </div>
+          <div class="field">
+            <span class="label" id="moodLabel">Ta météo intérieure, là maintenant ?</span>
+            <div class="moods" role="group" aria-labelledby="moodLabel" id="moods"></div>
+          </div>
+          <div class="field">
+            <span class="label" id="styleLabel">Tu as besoin de quoi ?</span>
+            <div class="styles" role="group" aria-labelledby="styleLabel" id="styles"></div>
+          </div>
+
+          <button type="button" class="primary" id="startBtn" disabled>On commence</button>
+          <button type="button" class="feature teddy" data-go="bouboule">
+            <span class="ico">🧸</span>
+            <span><b>Parler à voix haute</b><small>Bouboule, le doudou, t’écoute et te répond avec sa petite voix.</small></span>
+          </button>
+          <p class="fine">Nuage est une intelligence artificielle : une oreille attentive, pas un médecin ni un psy. Tout reste sur ton appareil ; tes messages sont envoyés à l’IA uniquement pour te répondre. Si tu es en danger, appelle le <b>3114</b> (gratuit, 24h/24) ou le <b>112</b>.</p>
+        </div>
+      </div>
+
+      <div class="page" id="chat" hidden>
+        <div class="thread" id="thread" role="log" aria-live="polite" aria-label="Conversation avec Nuage"></div>
+        <div class="crisis" id="crisis" role="alert" hidden>
+          <button type="button" class="x" id="crisisClose" aria-label="Masquer">×</button>
+          <strong>Tu n’es pas seul·e avec ça.</strong>
+          Des humains sont là pour t’écouter tout de suite, gratuitement : appelle le <b>3114</b> (24h/24). En cas de danger immédiat : <b>112</b>.
+        </div>
+        <div class="chips" id="chips">
+          <button type="button" class="chip tool" id="styleChip"></button>
+          <button type="button" class="chip fire" data-open="release">🔥 Évacue ta colère</button>
+          <button type="button" class="chip tool" data-tool="breath">🫧 Respirer</button>
+          <button type="button" class="chip" data-say="J’ai juste besoin de vider mon sac.">Vider mon sac</button>
+          <button type="button" class="chip" data-say="Je suis stressé·e et j’arrive pas à redescendre.">Je stresse</button>
+          <button type="button" class="chip" data-say="Je me sens seul·e en ce moment.">Je me sens seul·e</button>
+          <button type="button" class="chip" data-say="J’arrive pas à dormir, ça tourne dans ma tête.">Je dors mal</button>
+          <button type="button" class="chip tool" data-say="Tu peux me donner un petit défi pour aujourd’hui ?">🎯 Un petit défi</button>
+        </div>
+        <form class="composer" id="composer">
+          <textarea id="input" rows="1" placeholder="Écris ce que tu ressens…" aria-label="Ton message" maxlength="4000"></textarea>
+          <button type="submit" class="send" id="sendBtn" aria-label="Envoyer" disabled>
+            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- BOUBOULE -->
+    <section class="page" id="page-bouboule" data-page="bouboule" hidden>
+      <div class="bb-head">
+        <div class="bb-stage" id="bbStage">
+          <div class="bb-ring"></div>
+          <svg class="teddy" viewBox="0 0 200 200" aria-hidden="true">
+            <g class="ear l"><circle cx="50" cy="56" r="28" fill="#C98A4E"/><circle cx="50" cy="56" r="15" fill="#F2C9A0"/></g>
+            <g class="ear r"><circle cx="150" cy="56" r="28" fill="#C98A4E"/><circle cx="150" cy="56" r="15" fill="#F2C9A0"/></g>
+            <ellipse cx="100" cy="186" rx="62" ry="22" fill="#B57A42"/>
+            <circle cx="100" cy="106" r="72" fill="#D99A5B"/>
+            <path d="M150 74c-6-6-15 0-9 8l9 8 9-8c6-8-3-14-9-8z" fill="#FF7A90"/>
+            <ellipse cx="100" cy="132" rx="36" ry="28" fill="#F4D3AE"/>
+            <g class="eyes">
+              <g class="blink"><ellipse cx="72" cy="96" rx="8" ry="10" fill="#3A2618"/><circle cx="75" cy="92" r="3" fill="#fff"/></g>
+              <g class="blink"><ellipse cx="128" cy="96" rx="8" ry="10" fill="#3A2618"/><circle cx="131" cy="92" r="3" fill="#fff"/></g>
+            </g>
+            <ellipse cx="58" cy="124" rx="10" ry="6" fill="#FF9DB0" opacity=".6"/>
+            <ellipse cx="142" cy="124" rx="10" ry="6" fill="#FF9DB0" opacity=".6"/>
+            <ellipse cx="100" cy="118" rx="12" ry="9" fill="#4A2E1E"/>
+            <path class="smile" d="M86 136q14 12 28 0" fill="none" stroke="#4A2E1E" stroke-width="4" stroke-linecap="round"/>
+            <ellipse class="mouth-open" cx="100" cy="141" rx="11" ry="9" fill="#7A2E2E"/>
+            <ellipse cx="62" cy="190" rx="16" ry="11" fill="#C98A4E"/><ellipse cx="138" cy="190" rx="16" ry="11" fill="#C98A4E"/>
+          </svg>
+        </div>
+        <div class="txt">
+          <h2>Bouboule</h2>
+          <p class="state" id="bbState">t’écoute, tout doux</p>
+        </div>
+        <div class="btns">
+          <button type="button" class="icon-btn" id="bbVoice" aria-pressed="true" title="Voix de Bouboule"></button>
+          <button type="button" class="icon-btn" id="bbNew" aria-label="Recommencer avec Bouboule" title="Recommencer">
+            <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4h4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="bb-thread" id="bbThread" role="log" aria-live="polite" aria-label="Conversation avec Bouboule"></div>
+      <div class="bb-dock">
+        <div class="crisis" id="bbCrisis" role="alert" hidden>
+          <strong>Tu n’es pas seul·e avec ça.</strong>
+          Des humains sont là pour t’écouter tout de suite, gratuitement : appelle le <b>3114</b> (24h/24). En cas de danger immédiat : <b>112</b>.
+        </div>
+        <button type="button" class="mic" id="micBtn" aria-label="Parler à Bouboule">
+          <svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4M9 21h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="mic-label" id="micLabel">Appuie pour parler</div>
+        <form class="bb-type" id="bbForm">
+          <input type="text" id="bbInput" maxlength="1000" placeholder="Ou écris à Bouboule…" aria-label="Message pour Bouboule">
+          <button type="submit" class="secondary" id="bbSend">Envoyer</button>
+        </form>
+        <p class="bb-hint" id="bbInfo">Appuie une fois pour parler, une deuxième fois quand tu as fini.</p>
+      </div>
+    </section>
+
+    <!-- OUTILS -->
+    <section class="page" id="page-outils" data-page="outils" hidden>
+      <div class="scroll">
+        <h2 class="page-title">Ma boîte à outils</h2>
+        <p class="page-lead">De petits exercices pour souffler, revenir au présent ou vider ce qui déborde.</p>
+        <button type="button" class="feature" data-open="release">
+          <span class="ico">🔥</span>
+          <span><b>Évacue ta colère</b><small>Écris tout ce qui t’énerve, même les gros mots, et regarde-le partir en fumée.</small></span>
+        </button>
+        <div class="tools">
+          <button type="button" class="tool-card" data-open="breath">
+            <span class="ico c1">🫧</span>
+            <span><b>Respirer 1 minute</b><small>Le nuage gonfle, tu inspires ; il dégonfle, tu souffles. Pour calmer le cœur.</small></span>
+            <svg class="go" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+          </button>
+          <button type="button" class="tool-card" data-open="ground">
+            <span class="ico c2">🌿</span>
+            <span><b>Ancrage 5-4-3-2-1</b><small>Quand l’angoisse monte : tes cinq sens te ramènent ici et maintenant.</small></span>
+            <svg class="go" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+          </button>
+          <button type="button" class="tool-card" data-go="bouboule">
+            <span class="ico c3">🧸</span>
+            <span><b>Parler à Bouboule</b><small>Ton doudou t’écoute à voix haute, pour un moment tout doux.</small></span>
+            <svg class="go" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+          </button>
+          <button type="button" class="tool-card" data-open="joys">
+            <span class="ico c3">🎲</span>
+            <span><b>Mes petits plaisirs</b><small>Ta liste de choses qui font du bien, et un tirage au hasard quand tu manques d’idées.</small></span>
+            <svg class="go" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- JOURNAL -->
+    <section class="page" id="page-journal" data-page="journal" hidden>
+      <div class="scroll">
+        <h2 class="page-title">Mon journal météo</h2>
+        <p class="page-lead">Ton ciel intérieur, jour après jour.</p>
+        <div class="section">
+          <h3 id="todayLabel">Et aujourd’hui ?</h3>
+          <p class="hint">Note ta météo du jour, même sans parler à Nuage.</p>
+          <div class="moods" role="group" aria-labelledby="todayLabel" id="todayMoods"></div>
+        </div>
+        <div class="section">
+          <h3>Cette semaine</h3>
+          <p class="hint">Comparée à la semaine dernière.</p>
+          <div class="bilan" id="bilan"></div>
+        </div>
+        <div class="section">
+          <h3>Les 4 dernières semaines</h3>
+          <p class="hint">Chaque case est un jour.</p>
+          <div class="cal-head" aria-hidden="true"><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+          <div class="cal" id="cal"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MON NUAGE -->
+    <section class="page" id="page-moi" data-page="moi" hidden>
+      <div class="scroll">
+        <div class="section me-hero">
+          <span class="float big" data-cloud></span>
+          <p class="days" id="careDays"></p>
+          <p class="next" id="careNext"></p>
+          <div class="progress" aria-hidden="true"><i id="careBar"></i></div>
+        </div>
+        <div class="section">
+          <h3>Ses accessoires</h3>
+          <p class="hint">Chaque jour où tu prends soin de toi (une météo notée, un outil, une conversation), Nuage gagne de quoi se faire beau. Il ne perd jamais rien si tu t’absentes. Touche un accessoire pour le mettre ou l’enlever.</p>
+          <div class="accs" id="accs"></div>
+        </div>
+        <div class="section">
+          <h3>Ce que je retiens de toi</h3>
+          <p class="hint">Pour ne pas te faire tout répéter. C’est stocké seulement sur ton appareil, et tu peux effacer ce que tu veux.</p>
+          <ul class="list" id="facts"></ul>
+          <button type="button" class="danger" id="forgetAll">Tout oublier</button>
+        </div>
+        <div class="section">
+          <h3>Mes données</h3>
+          <p class="hint">Conversations, journal, carnet et accessoires restent dans ce navigateur. Les effacer remet Nuage à zéro.</p>
+          <button type="button" class="danger" id="wipeAll">Effacer toutes mes données</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="tabs" id="tabs" aria-label="Menu">
+    <button type="button" class="tab" data-tab="parler" aria-current="page">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-5 4v-4H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+      Parler
+    </button>
+    <button type="button" class="tab" data-tab="bouboule">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6.5" cy="7" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="7" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="13.5" r="7" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="15.5" r="1.4" fill="currentColor"/></svg>
+      Bouboule
+    </button>
+    <button type="button" class="tab" data-tab="outils">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M3 12h18" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      Outils
+    </button>
+    <button type="button" class="tab" data-tab="journal">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 10h16M9 3v4M15 3v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      Journal
+    </button>
+    <button type="button" class="tab" data-tab="moi">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 19h10a4 4 0 0 0 .4-8 5 5 0 0 0-9.6-1.5A4.8 4.8 0 0 0 7 19z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+      Mon Nuage
+    </button>
+  </nav>
+</div>
+
+<dialog id="breathDlg">
+  <h3>On respire ensemble</h3>
+  <p class="sub">Inspire quand le nuage gonfle, souffle quand il dégonfle.</p>
+  <div class="breath-stage"><span class="breath" id="bubble" data-cloud></span></div>
+  <div class="breath-label" id="breathLabel">Prêt·e ?</div>
+  <button type="button" class="primary btn-center" id="breathClose">J’ai fini</button>
+</dialog>
+
+<dialog id="groundDlg">
+  <div class="progress" aria-hidden="true"><i id="groundBar"></i></div>
+  <div class="ground-step" id="groundStep"></div>
+  <button type="button" class="ghost" data-close>Arrêter</button>
+</dialog>
+
+<dialog id="releaseDlg" class="fire-dlg">
+  <div id="fireWrite">
+    <h3>Évacue ta colère 🔥</h3>
+    <p class="sub">Écris tout ce qui t’énerve, en vrac, même les gros mots. Personne ne le lira : ce n’est ni gardé, ni envoyé.</p>
+    <div class="anger">
+      <label for="angerBefore">Ta colère, là, sur 10 <output id="angerBeforeOut">7</output></label>
+      <input type="range" id="angerBefore" min="0" max="10" value="7">
+    </div>
+    <textarea class="box" id="releaseText" aria-label="Ce qui t’énerve" placeholder="Ce qui m’énerve, c’est…"></textarea>
+    <div style="height:18px"></div>
+    <button type="button" class="primary fire-btn btn-center" id="releaseBtn" disabled>🔥 Tout brûler</button>
+  </div>
+  <canvas class="burn" id="burnCanvas" hidden></canvas>
+  <div id="fireAfter" hidden>
+    <h3>Pfiou. Parti en fumée.</h3>
+    <p class="sub">Prends une grande inspiration. Et maintenant ?</p>
+    <div class="anger">
+      <label for="angerAfter">Ta colère, maintenant <output id="angerAfterOut">7</output></label>
+      <input type="range" id="angerAfter" min="0" max="10" value="7">
+    </div>
+    <button type="button" class="primary btn-center" id="angerOk">Valider</button>
+  </div>
+  <div id="fireDone" hidden>
+    <p class="result" id="fireResult"></p>
+    <p class="result-sub" id="fireResultSub"></p>
+    <div class="stack">
+      <button type="button" class="primary fire-btn btn-center" id="fireAgain">🔥 En brûler encore</button>
+      <button type="button" class="secondary btn-center" id="fireTalk">En parler à Nuage</button>
+    </div>
+  </div>
+  <button type="button" class="ghost" data-close>Fermer</button>
+</dialog>
+
+<dialog id="joysDlg">
+  <h3>Mes petits plaisirs</h3>
+  <p class="sub">Ce qui te fait du bien, même un tout petit peu. Nuage s’en servira pour te remonter le moral.</p>
+  <ul class="list" id="joyList"></ul>
+  <form class="add-row" id="joyForm">
+    <input type="text" id="joyInput" maxlength="80" placeholder="Ajouter un petit plaisir" aria-label="Nouveau petit plaisir">
+    <button type="submit" class="secondary">Ajouter</button>
+  </form>
+  <div class="suggest" id="joySuggest"></div>
+  <div class="draw" id="joyDraw" hidden></div>
+  <div style="height:14px"></div>
+  <button type="button" class="primary btn-center" id="joyPick">Tire-m’en un au hasard 🎲</button>
+  <button type="button" class="ghost" data-close>Fermer</button>
+</dialog>
+
+<dialog id="helpDlg">
+  <h3>Parler à quelqu’un, maintenant</h3>
+  <p class="sub">Des personnes formées, gratuites et anonymes.</p>
+  <div class="help-list">
+    <a class="help-item" href="tel:3114"><span>Prévention du suicide<small>24h/24, 7j/7</small></span><b>3114</b></a>
+    <a class="help-item" href="tel:112"><span>Urgence, danger immédiat<small>Ou le 15 (SAMU)</small></span><b>112</b></a>
+    <a class="help-item" href="tel:0972394050"><span>SOS Amitié<small>Écoute, 24h/24</small></span><b>09 72 39 40 50</b></a>
+    <a class="help-item" href="tel:0800235236"><span>Fil Santé Jeunes<small>12–25 ans, tous les jours</small></span><b>0 800 235 236</b></a>
+    <a class="help-item" href="tel:3919"><span>Violences femmes info<small>24h/24</small></span><b>3919</b></a>
+    <a class="help-item" href="tel:119"><span>Enfance en danger<small>24h/24</small></span><b>119</b></a>
+  </div>
+  <button type="button" class="ghost" data-close>Fermer</button>
+</dialog>
+
+<script>
+(function () {
+  "use strict";
+
+  var LS = "nuage-v1";
+  var $ = function (id) { return document.getElementById(id); };
+
+  // --- Données fixes ---
+  var MOODS = [
+    { id: "soleil", e: "☀️", t: "Soleil", score: 5 },
+    { id: "nuageux", e: "⛅", t: "Nuageux", score: 4 },
+    { id: "brouillard", e: "🌫️", t: "Brouillard", score: 2.5 },
+    { id: "pluie", e: "🌧️", t: "Pluie", score: 2 },
+    { id: "orage", e: "⛈️", t: "Orage", score: 1.5 },
+  ];
+  var MOOD = {};
+  MOODS.forEach(function (m) { MOOD[m.id] = m; });
+
+  var STYLES = [
+    { id: "ecouter", e: "👂", t: "Juste qu’on m’écoute", chip: "👂 Mode écoute", note: "Ok, je t’écoute, sans conseils." },
+    { id: "conseils", e: "💡", t: "Des conseils", chip: "💡 Mode conseils", note: "Ok, je te proposerai des pistes concrètes." },
+    { id: "idees", e: "🎈", t: "Me changer les idées", chip: "🎈 Mode légèreté", note: "Ok, on va essayer d’alléger un peu le ciel." },
+  ];
+  var STYLE = {};
+  STYLES.forEach(function (s) { STYLE[s.id] = s; });
+
+  // Accessoires gagnés avec les jours où l'on prend soin de soi. Jamais perdus.
+  var ACCS = [
+    { id: "echarpe", e: "🧣", t: "Écharpe", at: 2 },
+    { id: "fleur", e: "🌸", t: "Fleur", at: 5 },
+    { id: "lunettes", e: "🕶️", t: "Lunettes", at: 10 },
+    { id: "arcenciel", e: "🌈", t: "Arc-en-ciel", at: 15 },
+    { id: "etoiles", e: "✨", t: "Étoiles", at: 25 },
+  ];
+
+  var GREET = {
+    soleil: ["Oh, du soleil, ça fait plaisir ☀️", "Raconte-moi ce qui te met de bonne humeur… ou ce qui t’amène quand même ici ?"],
+    nuageux: ["Un ciel un peu gris, hein ⛅", "Pas la tempête, mais pas le grand bleu non plus. Qu’est-ce qui fait des nuages en ce moment ?"],
+    pluie: ["Il pleut un peu dedans aujourd’hui 🌧️", "Tu as bien fait de venir. Prends ton temps : qu’est-ce qui te pèse ?"],
+    orage: ["Ça gronde fort, on dirait ⛈️", "Ici tu peux tout lâcher, même en vrac, même en colère. Qu’est-ce qui s’est passé ?"],
+    brouillard: ["Le brouillard, c’est pas facile : on ne voit pas bien où on va 🌫️", "Pas besoin que ce soit clair pour en parler. Dis-moi juste ce qui te vient."],
+  };
+
+  var JOY_IDEAS = ["Une douche bien chaude", "Ma chanson préférée à fond", "Une balade de 10 minutes", "Appeler quelqu’un que j’aime", "Un chocolat chaud", "Des vidéos d’animaux", "Ranger un tout petit coin", "Un plaid et une série", "Dessiner ou gribouiller", "Regarder le ciel"];
+
+  var GROUND = [
+    { n: 5, e: "👀", what: "choses que tu vois", tip: "Regarde autour de toi. Nomme-les dans ta tête : une couleur, un objet, une forme…" },
+    { n: 4, e: "✋", what: "choses que tu peux toucher", tip: "Ton pull, la table, le sol sous tes pieds… Sens leur texture." },
+    { n: 3, e: "👂", what: "sons que tu entends", tip: "Un bruit lointain, ta respiration, le frigo… Prends ton temps." },
+    { n: 2, e: "👃", what: "odeurs que tu sens", tip: "Même faibles. Tu peux aussi penser à deux odeurs que tu aimes." },
+    { n: 1, e: "👅", what: "goût dans ta bouche", tip: "Ou une gorgée d’eau, en la sentant vraiment." },
+  ];
+
+  // Mots qui font apparaître les numéros d'aide, sans attendre la réponse.
+  var CRISIS = /(suicid|me tuer|en finir|mettre fin à (mes|ma) (jours|vie)|plus envie de vivre|envie de mourir|veux mourir|disparaître pour toujours|me faire du mal|me scarifi|scarification|automutil|me couper les veines|sauter d[’'u] ?(pont|balcon|fenêtre))/i;
+
+  // --- État (stocké seulement dans ce navigateur) ---
+  var state = load();
+  function load() {
+    var s = null;
+    try { s = JSON.parse(localStorage.getItem(LS) || "null"); } catch (e) {}
+    if (!s) {
+      try {
+        var old = JSON.parse(localStorage.getItem("lumi-v1") || "null"); // ancienne version
+        if (old) s = { name: old.name, mood: old.mood, messages: old.messages || [] };
+      } catch (e) {}
+    }
+    s = s || {};
+    return {
+      name: s.name || "",
+      mood: s.mood || "",
+      style: s.style || "",
+      messages: s.messages || [],
+      memory: s.memory || { faits: [], dernier_sujet: "" },
+      memoAt: s.memoAt || 0,
+      convId: s.convId || 0,
+      journal: s.journal || {},
+      care: s.care || {},
+      wear: s.wear || [],
+      plaisirs: s.plaisirs || [],
+      boubou: s.boubou || [],
+      voiceOn: s.voiceOn !== false,
+    };
+  }
+  function save() { try { localStorage.setItem(LS, JSON.stringify(state)); } catch (e) {} }
+
+  function key(d) {
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+  function todayKey() { return key(new Date()); }
+
+  // --- Transport (serveur /api ; une autre version peut le remplacer) ---
+  var Transport = window.NuageTransport || {
+    chat: function (payload, onText) {
+      var full = "";
+      return fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }).then(function (res) {
+        if (!res.ok || !res.body) throw { code: "http" };
+        var reader = res.body.getReader();
+        var dec = new TextDecoder();
+        return (function pump() {
+          return reader.read().then(function (c) {
+            if (c.done) return full;
+            full += dec.decode(c.value, { stream: true });
+            if (full.trim()) onText(full);
+            return pump();
+          });
+        })();
+      }, function () { throw { code: "network" }; });
+    },
+    memo: function (payload) {
+      return fetch("/api/memo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }).then(function (res) {
+        if (!res.ok) throw { code: "http" };
+        return res.json();
+      });
+    },
+  };
+
+  // --- Voix (reconnaissance + synthèse du navigateur ; une autre version peut la remplacer) ---
+  var Voice = window.NuageVoice || (function () {
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    var synth = window.speechSynthesis;
+    var rec = null, finals = "", endWait = null, autoEnd = null;
+    function frVoice() {
+      var vs = synth.getVoices();
+      return vs.find(function (v) { return /^fr[-_]FR/i.test(v.lang); }) || vs.find(function (v) { return /^fr/i.test(v.lang); }) || null;
+    }
+    return {
+      available: function () { return Promise.resolve({ listen: !!SR, speak: !!synth }); },
+      start: function (onPartial, onAutoEnd) {
+        finals = "";
+        autoEnd = onAutoEnd;
+        return new Promise(function (resolve, reject) {
+          if (!SR) return reject({ code: "unavailable" });
+          rec = new SR();
+          rec.lang = "fr-FR";
+          rec.continuous = true;
+          rec.interimResults = true;
+          rec.onstart = function () { resolve(); };
+          rec.onresult = function (e) {
+            var interim = "";
+            for (var i = e.resultIndex; i < e.results.length; i++) {
+              if (e.results[i].isFinal) finals += e.results[i][0].transcript + " ";
+              else interim += e.results[i][0].transcript;
+            }
+            onPartial((finals + interim).trim());
+          };
+          rec.onerror = function (e) {
+            reject({ code: e.error === "not-allowed" || e.error === "service-not-allowed" ? "not_granted" : "upstream_error" });
+          };
+          rec.onend = function () {
+            rec = null;
+            if (endWait) { endWait(finals.trim()); endWait = null; }
+            else if (autoEnd) { var f = autoEnd; autoEnd = null; f(finals.trim()); }
+          };
+          try { rec.start(); } catch (err) { reject({ code: "upstream_error" }); }
+        });
+      },
+      stop: function () {
+        autoEnd = null;
+        return new Promise(function (resolve) {
+          if (!rec) return resolve(finals.trim());
+          endWait = resolve;
+          rec.stop();
+        });
+      },
+      speak: function (text) {
+        return new Promise(function (resolve) {
+          if (!synth) return resolve();
+          synth.cancel();
+          var u = new SpeechSynthesisUtterance(text);
+          u.lang = "fr-FR";
+          var v = frVoice();
+          if (v) u.voice = v;
+          u.pitch = 1.3;
+          u.rate = 1;
+          u.onend = u.onerror = function () { resolve(); };
+          synth.speak(u);
+        });
+      },
+      hush: function () { if (synth) synth.cancel(); },
+      unlock: function () {
+        if (!synth || this._unlocked) return;
+        this._unlocked = true;
+        try { var u = new SpeechSynthesisUtterance(" "); u.volume = 0; synth.speak(u); } catch (e) {}
+      },
+    };
+  })();
+
+  // --- Le personnage et ses accessoires ---
+  function star(x, y, r) {
+    var p = [];
+    for (var i = 0; i < 10; i++) {
+      var a = Math.PI / 5 * i - Math.PI / 2, rr = i % 2 ? r * .45 : r;
+      p.push((x + rr * Math.cos(a)).toFixed(1) + "," + (y + rr * Math.sin(a)).toFixed(1));
+    }
+    return '<polygon points="' + p.join(" ") + '" fill="#FFD166"/>';
+  }
+  function cloudSVG(wear) {
+    var w = {};
+    (wear || []).forEach(function (k) { w[k] = true; });
+    var s = '<svg class="cloud" viewBox="-8 -8 136 106" aria-hidden="true">';
+    if (w.arcenciel) {
+      s += '<g fill="none" stroke-width="6" stroke-linecap="round">' +
+        '<path d="M-4 66a64 64 0 0 1 128 0" stroke="#FF8A8A"/>' +
+        '<path d="M2 66a58 58 0 0 1 116 0" stroke="#FFC46B"/>' +
+        '<path d="M8 66a52 52 0 0 1 104 0" stroke="#7FB3FF"/></g>';
+    }
+    s += '<path class="body" d="M30 86h62a24 24 0 0 0 2-47.9A30 30 0 0 0 37.5 26 25 25 0 0 0 30 86z"/>' +
+      '<path class="shade" d="M20 74c8 9 20 10 30 10h40c9 0 17-4 21-12-6 5-13 6-20 6H50c-12 0-22-1-30-4z"/>';
+    if (w.echarpe) {
+      s += '<path d="M22 72q38 12 78 0l1 9q-40 13-80 0z" fill="#FF7A90"/>' +
+        '<path d="M78 80l3 15 9-2-4-15z" fill="#E85D78"/>';
+    }
+    s += '<ellipse class="eye" cx="48" cy="54" rx="4.5" ry="6"/><ellipse class="eye" cx="74" cy="54" rx="4.5" ry="6"/>' +
+      '<ellipse class="cheek" cx="39" cy="64" rx="6" ry="3.5"/><ellipse class="cheek" cx="83" cy="64" rx="6" ry="3.5"/>' +
+      '<path class="mouth" d="M55 64q6 6 12 0"/>';
+    if (w.lunettes) {
+      s += '<g fill="#2B2440"><rect x="37" y="46" width="22" height="15" rx="7"/><rect x="63" y="46" width="22" height="15" rx="7"/></g>' +
+        '<path d="M59 51h4" stroke="#2B2440" stroke-width="3"/>' +
+        '<path d="M41 50h6M67 50h6" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".55"/>';
+    }
+    if (w.fleur) {
+      s += '<g transform="translate(78 14)">' +
+        '<circle cx="0" cy="-7" r="5" fill="#FF9EC4"/><circle cx="6.7" cy="-2.2" r="5" fill="#FF9EC4"/><circle cx="4.1" cy="5.7" r="5" fill="#FF9EC4"/>' +
+        '<circle cx="-4.1" cy="5.7" r="5" fill="#FF9EC4"/><circle cx="-6.7" cy="-2.2" r="5" fill="#FF9EC4"/><circle r="4" fill="#FFD166"/></g>';
+    }
+    if (w.etoiles) s += star(6, 20, 7) + star(114, 14, 6) + star(100, -2, 4.5);
+    return s + "</svg>";
+  }
+  function paintClouds(root, force) {
+    var slots = (root || document).querySelectorAll("[data-cloud]");
+    for (var i = 0; i < slots.length; i++) {
+      if (force || !slots[i].firstChild) slots[i].innerHTML = cloudSVG(state.wear);
+    }
+  }
+  paintClouds();
+  var NEW_ICON = '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>';
+  $("newBtn").innerHTML = NEW_ICON;
+
+  // Jours où l'on prend soin de soi : météo notée, outil utilisé, conversation.
+  function careCount() {
+    var all = {};
+    Object.keys(state.journal).forEach(function (k) { all[k] = 1; });
+    Object.keys(state.care).forEach(function (k) { all[k] = 1; });
+    return Object.keys(all).length;
+  }
+  function markCare() {
+    var before = careCount();
+    state.care[todayKey()] = 1;
+    save();
+    checkUnlocks(before);
+  }
+  function checkUnlocks(before) {
+    var now = careCount();
+    ACCS.forEach(function (a) {
+      if (before < a.at && now >= a.at) {
+        if (state.wear.indexOf(a.id) < 0) state.wear.push(a.id);
+        save();
+        paintClouds(document, true);
+        toast("Nouveau ! Nuage a gagné : " + a.e + " " + a.t);
+      }
+    });
+  }
+  var toastTimer = null;
+  function toast(text) {
+    var old = document.querySelector(".toast");
+    if (old) old.remove();
+    var t = document.createElement("div");
+    t.className = "toast";
+    t.setAttribute("role", "status");
+    t.textContent = text;
+    document.body.appendChild(t);
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.remove(); }, 3500);
+  }
+
+  // --- Menu ---
+  var currentTab = "parler";
+  function showTab(name) {
+    currentTab = name;
+    var pages = document.querySelectorAll("main > .page");
+    for (var i = 0; i < pages.length; i++) pages[i].hidden = pages[i].getAttribute("data-page") !== name;
+    var tabs = document.querySelectorAll(".tab");
+    for (var j = 0; j < tabs.length; j++) {
+      if (tabs[j].getAttribute("data-tab") === name) tabs[j].setAttribute("aria-current", "page");
+      else tabs[j].removeAttribute("aria-current");
+    }
+    $("newBtn").hidden = !(name === "parler" && !$("chat").hidden);
+    if (name === "bouboule") bbEnter(); else bbLeave();
+    if (name === "journal") renderJournal();
+    if (name === "moi") renderMe();
+  }
+  $("tabs").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-tab]");
+    if (b) showTab(b.getAttribute("data-tab"));
+  });
+  document.addEventListener("click", function (e) {
+    var g = e.target.closest("[data-go]");
+    if (g) showTab(g.getAttribute("data-go"));
+  });
+
+  // --- Choix (météo, style) ---
+  function picker(el, items, selected, onPick) {
+    el.innerHTML = "";
+    items.forEach(function (it) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "pick";
+      b.setAttribute("aria-pressed", it.id === selected ? "true" : "false");
+      b.innerHTML = "<span></span>";
+      b.firstChild.textContent = it.e;
+      b.appendChild(document.createTextNode(it.t));
+      b.addEventListener("click", function () {
+        var all = el.querySelectorAll(".pick");
+        for (var j = 0; j < all.length; j++) all[j].setAttribute("aria-pressed", "false");
+        b.setAttribute("aria-pressed", "true");
+        onPick(it.id);
+      });
+      el.appendChild(b);
+    });
+  }
+
+  // --- Accueil ---
+  var pickMood = "", pickStyle = state.style || "";
+  function renderWelcome() {
+    pickMood = "";
+    picker($("moods"), MOODS, "", function (id) { pickMood = id; checkStart(); });
+    picker($("styles"), STYLES, pickStyle, function (id) { pickStyle = id; checkStart(); });
+    $("name").value = state.name || "";
+    var back = state.memory.faits.length || Object.keys(state.journal).length;
+    $("hello").textContent = back ? "Re-coucou" + (state.name ? " " + state.name : "") + " !" : "Salut, moi c’est Nuage.";
+    $("lead").textContent = back
+      ? "Content de te revoir. Comment est le ciel aujourd’hui ?"
+      : "Ici tu peux dire ce qui pèse, même si c’est flou, même si ça te paraît « pas si grave ». On en parle à ton rythme.";
+    checkStart();
+  }
+  function checkStart() { $("startBtn").disabled = !(pickMood && pickStyle); }
+
+  $("startBtn").addEventListener("click", function () {
+    state.name = $("name").value.trim();
+    state.mood = pickMood;
+    state.style = pickStyle;
+    state.messages = [];
+    state.memoAt = 0;
+    state.convId++;
+    var before = careCount();
+    state.journal[todayKey()] = pickMood;
+    save();
+    checkUnlocks(before);
+    markCare();
+    var g = GREET[state.mood] || GREET.nuageux;
+    var lines = [(state.name ? "Coucou " + state.name + ". " : "Coucou. ") + g[0]];
+    var last = state.memory.dernier_sujet;
+    if (last) lines.push("Au fait, la dernière fois tu me parlais de " + last + ". Ça a évolué depuis ? Ou tu préfères parler d’autre chose aujourd’hui ?");
+    else lines.push(g[1]);
+    showChat();
+    say(lines);
+  });
+
+  // Nouvelle conversation : deux appuis, pour éviter les effacements par erreur.
+  var armTimer = null;
+  $("newBtn").addEventListener("click", function () {
+    if (busy) return;
+    var nb = $("newBtn");
+    if (state.messages.some(function (m) { return m.role === "user"; }) && !nb.classList.contains("armed")) {
+      nb.classList.add("armed");
+      nb.textContent = "Terminer ?";
+      armTimer = setTimeout(function () { nb.classList.remove("armed"); nb.innerHTML = NEW_ICON; }, 3000);
+      return;
+    }
+    clearTimeout(armTimer);
+    nb.classList.remove("armed");
+    nb.innerHTML = NEW_ICON;
+    remember(true);
+    state.messages = [];
+    save();
+    $("thread").innerHTML = "";
+    $("crisis").hidden = true;
+    $("chat").hidden = true;
+    $("welcome").hidden = false;
+    $("newBtn").hidden = true;
+    renderWelcome();
+  });
+
+  function showChat() {
+    $("welcome").hidden = true;
+    $("chat").hidden = false;
+    $("newBtn").hidden = currentTab !== "parler";
+    renderStyleChip();
+  }
+
+  var busy = false;
+  function say(lines) {
+    busy = true;
+    var k = 0;
+    (function next() {
+      if (k >= lines.length) { busy = false; updateSend(); $("input").focus(); return; }
+      var t = typing();
+      setTimeout(function () {
+        t.remove();
+        push("assistant", lines[k]);
+        k++;
+        setTimeout(next, 350);
+      }, 600 + Math.min(lines[k].length * 16, 1500));
+    })();
+  }
+
+  // --- Affichage de la conversation ---
+  function bubble(role, text) {
+    var thread = $("thread");
+    var prev = thread.lastElementChild;
+    var cls = role === "user" ? "me" : "bot";
+    var row = document.createElement("div");
+    row.className = "row " + cls;
+    if (prev && prev.classList.contains(cls)) row.classList.add("cont");
+    row.innerHTML = '<span data-cloud></span><div class="bubble"></div>';
+    paintClouds(row);
+    row.querySelector(".bubble").textContent = text;
+    thread.appendChild(row);
+    scroll();
+    return row;
+  }
+  function note(text) {
+    var n = document.createElement("div");
+    n.className = "note";
+    n.textContent = text;
+    $("thread").appendChild(n);
+    scroll();
+  }
+  function push(role, text) {
+    state.messages.push({ role: role, content: text });
+    save();
+    return bubble(role, text);
+  }
+  function typing() {
+    var row = bubble("assistant", "");
+    row.querySelector(".bubble").innerHTML = '<span class="typing" aria-label="Nuage écrit"><b></b><b></b><b></b></span>';
+    setTalking(true);
+    return { row: row, remove: function () { row.remove(); setTalking(false); } };
+  }
+  function setTalking(on) {
+    $("head").classList.toggle("talking", on);
+    $("status").textContent = on ? "est en train d’écrire…" : "à ton écoute";
+  }
+  function scroll() { var t = $("thread"); t.scrollTop = t.scrollHeight; }
+
+  function renderStyleChip() {
+    var s = STYLE[state.style] || STYLES[0];
+    $("styleChip").textContent = s.chip;
+    $("styleChip").setAttribute("aria-label", s.chip + " (appuie pour changer)");
+  }
+  $("styleChip").addEventListener("click", function () {
+    var i = STYLES.findIndex(function (s) { return s.id === state.style; });
+    state.style = STYLES[(i + 1) % STYLES.length].id;
+    save();
+    renderStyleChip();
+    note(STYLE[state.style].note);
+  });
+
+  // --- Envoi ---
+  var input = $("input");
+  function updateSend() { $("sendBtn").disabled = busy || !input.value.trim(); }
+  input.addEventListener("input", function () {
+    input.style.height = "auto";
+    input.style.height = Math.min(input.scrollHeight, 160) + "px";
+    updateSend();
+  });
+  input.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && !e.shiftKey && !e.isComposing && window.matchMedia("(pointer: fine)").matches) {
+      e.preventDefault();
+      $("composer").requestSubmit();
+    }
+  });
+  $("composer").addEventListener("submit", function (e) {
+    e.preventDefault();
+    send(input.value);
+  });
+  $("chips").addEventListener("click", function (e) {
+    var b = e.target.closest(".chip");
+    if (!b || b.id === "styleChip") return;
+    if (b.getAttribute("data-tool") === "breath") return openBreath();
+    var s = b.getAttribute("data-say");
+    if (s) send(s);
+  });
+
+  function send(text) {
+    text = (text || "").trim();
+    if (!text || busy) return;
+    input.value = "";
+    input.style.height = "auto";
+    push("user", text);
+    if (CRISIS.test(text)) $("crisis").hidden = false;
+    ask();
+  }
+
+  function payload() {
+    return { name: state.name, mood: state.mood, style: state.style, memory: state.memory, plaisirs: state.plaisirs, messages: state.messages };
+  }
+
+  function ask() {
+    busy = true;
+    updateSend();
+    var t = typing();
+    var started = Date.now();
+    var bub = null, shown = "", reveal = null;
+
+    // Une réponse instantanée sonne faux : on laisse les petits points au moins 0,9 s.
+    function render(text) {
+      shown = text;
+      if (reveal) return;
+      var wait = Math.max(0, 900 - (Date.now() - started));
+      reveal = setTimeout(function draw() {
+        if (!bub) { bub = t.row.querySelector(".bubble"); bub.textContent = ""; }
+        bub.textContent = shown.replace(/^\s+/, "");
+        scroll();
+        reveal = setTimeout(draw, 60);
+      }, wait);
+    }
+
+    Transport.chat(payload(), render).then(function (full) {
+      clearTimeout(reveal);
+      t.remove();
+      full = (full || "").trim();
+      if (!full) full = "Hmm, je n’ai rien réussi à formuler. Tu peux me redire ?";
+      var cut = full.indexOf("⚠︎");
+      if (cut >= 0) {
+        var partial = full.slice(0, cut).trim();
+        if (partial) push("assistant", partial);
+        bubble("assistant", full.slice(cut + 2).trim());
+      } else {
+        push("assistant", full);
+        remember(false);
+      }
+    }).catch(function (e) {
+      clearTimeout(reveal);
+      t.remove();
+      var code = e && e.code;
+      if (e && e.text && code !== "refused") push("assistant", e.text);
+      else if (code !== "refused") {
+        var last = state.messages[state.messages.length - 1];
+        if (last && last.role === "user") {
+          input.value = last.content;
+          state.messages.pop();
+          save();
+          $("thread").lastElementChild.remove();
+        }
+      }
+      bubble("assistant", errorText(code));
+    }).then(function () {
+      busy = false;
+      setTalking(false);
+      updateSend();
+    });
+  }
+
+  function errorText(code) {
+    if (code === "not_granted" || code === "unavailable" || code === "sampling_disabled")
+      return "Pour que je puisse te répondre ici, il faut autoriser cette page à utiliser Claude. Accepte la demande qui s’affiche, ou ouvre la page sur claude.ai.";
+    if (code === "rate_limited") return "Beaucoup de messages d’un coup, je reprends mon souffle… Réessaie dans un petit moment.";
+    if (code === "refused") return "Je n’arrive pas à te répondre là-dessus. Si tu traverses un moment très dur, le 3114 est joignable gratuitement 24h/24. Et je reste là si tu veux me parler d’autre chose.";
+    return "Je n’arrive pas à me connecter pour l’instant 😕 Vérifie ta connexion et renvoie-moi ton message, je suis là.";
+  }
+
+  // --- Mémoire : mise à jour du carnet toutes les 4 réponses, et en fin de conversation ---
+  var memoBusy = false;
+  function remember(final) {
+    var users = state.messages.filter(function (m) { return m.role === "user"; }).length;
+    var fresh = users - state.memoAt;
+    if (memoBusy || fresh < 1 || (!final && fresh < 4)) return;
+    memoBusy = true;
+    var count = users, conv = state.convId;
+    Transport.memo({ memory: state.memory, messages: state.messages.slice(-30) }).then(function (m) {
+      if (m && Array.isArray(m.faits)) {
+        state.memory = { faits: m.faits.slice(0, 8), dernier_sujet: m.dernier_sujet || "" };
+        if (conv === state.convId) state.memoAt = count;
+        save();
+        if (!$("welcome").hidden) renderWelcome();
+        if (currentTab === "moi") renderMe();
+      }
+    }).catch(function () {}).then(function () { memoBusy = false; });
+  }
+
+  // --- Outils ---
+  document.addEventListener("click", function (e) {
+    var o = e.target.closest("[data-open]");
+    if (!o) return;
+    var w = o.getAttribute("data-open");
+    if (w === "breath") openBreath();
+    if (w === "ground") openGround();
+    if (w === "release") openRelease();
+    if (w === "joys") openJoys();
+  });
+
+  // Respiration (4 s inspire, 4 s pause, 6 s expire)
+  var breathTimer = null;
+  function openBreath() {
+    var b = $("bubble"), label = $("breathLabel");
+    $("breathDlg").showModal();
+    var steps = [
+      { t: "Inspire…", s: 1.9, d: 4000 },
+      { t: "Garde l’air…", s: 1.9, d: 4000 },
+      { t: "Souffle doucement…", s: 1, d: 6000 },
+    ];
+    var k = 0, rounds = 0;
+    b.style.transform = "scale(1)";
+    function step() {
+      var st = steps[k];
+      label.textContent = st.t;
+      b.style.transitionDuration = st.d + "ms";
+      b.style.transform = "scale(" + st.s + ")";
+      k = (k + 1) % steps.length;
+      if (k === 0) rounds++;
+      if (rounds >= 4) { breathTimer = setTimeout(function () { label.textContent = "Bravo. Comment tu te sens ?"; }, st.d); return; }
+      breathTimer = setTimeout(step, st.d);
+    }
+    breathTimer = setTimeout(step, 600);
+  }
+  function closeBreath() { clearTimeout(breathTimer); $("breathDlg").close(); $("breathLabel").textContent = "Prêt·e ?"; $("bubble").style.transform = "scale(1)"; }
+  $("breathClose").addEventListener("click", function () {
+    closeBreath();
+    markCare();
+    if (currentTab === "parler" && !$("chat").hidden && !busy) send("Je viens de faire l’exercice de respiration.");
+  });
+  $("breathDlg").addEventListener("cancel", closeBreath);
+
+  // Ancrage 5-4-3-2-1
+  var gStep = 0;
+  function openGround() { gStep = 0; renderGround(); $("groundDlg").showModal(); }
+  function renderGround() {
+    var box = $("groundStep");
+    box.innerHTML = "";
+    $("groundBar").style.width = (gStep / GROUND.length * 100) + "%";
+    if (gStep >= GROUND.length) {
+      box.innerHTML = '<span class="float" data-cloud style="--size:110px;display:inline-block"></span><h3>Tu es ici, maintenant.</h3><p class="sub">Bien joué. Ton corps est un endroit sûr où revenir quand ça s’emballe.</p><button type="button" class="primary btn-center" data-close>Merci Nuage</button>';
+      paintClouds(box);
+      markCare();
+      return;
+    }
+    var g = GROUND[gStep];
+    box.innerHTML = '<div class="ground-big"></div><p class="ground-what"></p><p class="sub"></p><div class="ground-dots"></div>';
+    box.querySelector(".ground-big").textContent = g.n;
+    box.querySelector(".ground-what").textContent = g.what;
+    box.querySelector(".sub").textContent = g.tip;
+    var dots = box.querySelector(".ground-dots");
+    var on = 0;
+    for (var i = 0; i < g.n; i++) {
+      var d = document.createElement("button");
+      d.type = "button";
+      d.setAttribute("aria-label", "J’en ai trouvé une");
+      d.addEventListener("click", function () {
+        if (this.classList.contains("on")) return;
+        this.classList.add("on");
+        this.textContent = g.e;
+        on++;
+        if (on === g.n) setTimeout(function () { gStep++; renderGround(); }, 500);
+      });
+      dots.appendChild(d);
+    }
+  }
+
+  // Évacue ta colère : le texte brûle à l'écran. Rien n'est stocké ni envoyé.
+  var angerBefore = 7;
+  function setRange(id, v) { $(id).value = v; $(id + "Out").textContent = v; }
+  ["angerBefore", "angerAfter"].forEach(function (id) {
+    $(id).addEventListener("input", function () { $(id + "Out").textContent = this.value; });
+  });
+  function openRelease(start) {
+    $("fireWrite").hidden = false;
+    $("burnCanvas").hidden = true;
+    $("fireAfter").hidden = true;
+    $("fireDone").hidden = true;
+    $("releaseText").value = "";
+    $("releaseBtn").disabled = true;
+    if (typeof start === "number") setRange("angerBefore", start);
+    if (!$("releaseDlg").open) $("releaseDlg").showModal();
+  }
+  $("releaseText").addEventListener("input", function () { $("releaseBtn").disabled = !this.value.trim(); });
+  $("releaseBtn").addEventListener("click", function () {
+    var text = $("releaseText").value.trim();
+    if (!text) return;
+    angerBefore = +$("angerBefore").value;
+    $("releaseText").value = "";
+    $("fireWrite").hidden = true;
+    var c = $("burnCanvas");
+    c.hidden = false;
+    var dlg = $("releaseDlg");
+    dlg.classList.remove("shake");
+    void dlg.offsetWidth;
+    dlg.classList.add("shake");
+    try { if (navigator.vibrate) navigator.vibrate([30, 50, 80]); } catch (e) {}
+    burn(c, text, function () {
+      c.hidden = true;
+      setRange("angerAfter", angerBefore);
+      $("fireAfter").hidden = false;
+    });
+    markCare();
+  });
+  $("angerOk").addEventListener("click", function () {
+    var after = +$("angerAfter").value, d = angerBefore - after;
+    $("fireResult").textContent = d > 0
+      ? "Ta colère est passée de " + angerBefore + " à " + after + " 💪"
+      : d < 0 ? "Elle est remontée à " + after + " sur 10." : "Toujours à " + after + " sur 10.";
+    $("fireResultSub").textContent = d >= 3
+      ? "Énorme. Ton corps aussi a besoin de redescendre : un verre d’eau, quelques étirements."
+      : d > 0 ? "Chaque point compte. Tu peux en brûler encore si ça bout toujours."
+      : "C’est ok si ça ne bouge pas tout de suite. La colère signale souvent qu’une limite a été franchie : en parler peut aider.";
+    $("fireAfter").hidden = true;
+    $("fireDone").hidden = false;
+  });
+  $("fireAgain").addEventListener("click", function () { openRelease(+$("angerAfter").value); });
+  $("fireTalk").addEventListener("click", function () {
+    $("releaseDlg").close();
+    showTab("parler");
+    if (!$("chat").hidden) {
+      input.value = "J’ai besoin de parler de ce qui m’a mis en colère.";
+      updateSend();
+      input.focus();
+    }
+  });
+
+  function wrapLines(ctx, text, max) {
+    var out = [];
+    text.split(/\n+/).forEach(function (para) {
+      var line = "";
+      para.split(/\s+/).forEach(function (w) {
+        var test = line ? line + " " + w : w;
+        if (ctx.measureText(test).width > max && line) { out.push(line); line = w; }
+        else line = test;
+      });
+      if (line) out.push(line);
+    });
+    return out;
+  }
+
+  // Les mots s'enflamment du bas vers le haut, puis partent en braises et en fumée.
+  function burn(canvas, text, done) {
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var W = canvas.clientWidth || 320;
+    var ctx = canvas.getContext("2d");
+    var font = "800 19px Nunito, system-ui, sans-serif", lh = 28, pad = 18;
+    ctx.font = font;
+    var lines = wrapLines(ctx, text, W - pad * 2).slice(0, 12);
+    var H = Math.max(180, lines.length * lh + pad * 2 + 40);
+    canvas.style.height = H + "px";
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var fg = "#F4EEFF";
+    ctx.font = font;
+    ctx.fillStyle = fg;
+    ctx.textBaseline = "top";
+    lines.forEach(function (l, i) { ctx.fillText(l, pad, pad + 30 + i * lh); });
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setTimeout(done, 900);
+      return;
+    }
+    var data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+    var step = Math.max(2, Math.round(1.6 * dpr)), parts = [];
+    for (var y = 0; y < canvas.height; y += step) {
+      for (var x = 0; x < canvas.width; x += step) {
+        if (data[(y * canvas.width + x) * 4 + 3] > 110) {
+          var py = y / dpr, px = x / dpr;
+          parts.push({
+            x: px, y: py,
+            d: (1 - py / H) * 1200 + Math.random() * 380 + Math.sin(px / 23) * 90,
+            vx: (Math.random() - 0.5) * 0.9,
+            vy: -(0.7 + Math.random() * 1.6),
+            life: 800 + Math.random() * 900,
+            w: Math.random() * 6.28,
+          });
+        }
+      }
+    }
+    if (parts.length > 9000) parts = parts.filter(function (_, i) { return i % Math.ceil(parts.length / 9000) === 0; });
+    var end = 0;
+    parts.forEach(function (p) { end = Math.max(end, p.d + p.life); });
+    var t0 = performance.now();
+    var FIRE = ["#FFF1B8", "#FFC14D", "#FF7A2E", "#E8401C"];
+    (function frame(now) {
+      var t = now - t0;
+      ctx.clearRect(0, 0, W, H);
+      // lueur du front de flammes
+      var front = H - (t / 1250) * H;
+      if (front > -40) {
+        var g = ctx.createLinearGradient(0, front - 50, 0, front + 40);
+        g.addColorStop(0, "rgba(255,120,40,0)");
+        g.addColorStop(0.6, "rgba(255,120,40,.28)");
+        g.addColorStop(1, "rgba(255,60,40,0)");
+        ctx.fillStyle = g;
+        ctx.fillRect(0, front - 50, W, 90);
+      }
+      var cold = [], hot = [], fire = [[], [], [], []], smoke = [];
+      for (var i = 0; i < parts.length; i++) {
+        var p = parts[i], age = t - p.d;
+        if (age < -220) cold.push(p);
+        else if (age < 0) hot.push(p);
+        else if (age < p.life * 0.55) fire[Math.min(3, Math.floor(age / (p.life * 0.55) * 4))].push(p);
+        else if (age < p.life) smoke.push(p);
+      }
+      ctx.fillStyle = fg;
+      cold.forEach(function (p) { ctx.fillRect(p.x, p.y, step / dpr + 0.4, step / dpr + 0.4); });
+      ctx.fillStyle = "#C2410C";
+      hot.forEach(function (p) { ctx.fillRect(p.x, p.y, step / dpr + 0.4, step / dpr + 0.4); });
+      ctx.globalCompositeOperation = "lighter";
+      fire.forEach(function (list, k) {
+        ctx.fillStyle = FIRE[k];
+        list.forEach(function (p) {
+          var age = t - p.d;
+          var px = p.x + p.vx * age * 0.05 + Math.sin(age * 0.012 + p.w) * 2.2;
+          var py = p.y + p.vy * age * 0.06;
+          var sz = 2.6 - k * 0.4;
+          ctx.fillRect(px, py, sz, sz);
+        });
+      });
+      ctx.globalCompositeOperation = "source-over";
+      smoke.forEach(function (p) {
+        var age = t - p.d, f = (age - p.life * 0.55) / (p.life * 0.45);
+        var px = p.x + p.vx * age * 0.05 + Math.sin(age * 0.008 + p.w) * 4;
+        var py = p.y + p.vy * age * 0.06;
+        ctx.fillStyle = "rgba(140,140,160," + ((1 - f) * 0.28).toFixed(3) + ")";
+        var sz = 2 + f * 5;
+        ctx.fillRect(px, py, sz, sz);
+      });
+      if (t < end) requestAnimationFrame(frame);
+      else { ctx.clearRect(0, 0, W, H); done(); }
+    })(t0);
+  }
+
+  // Petits plaisirs
+  function openJoys() { renderJoys(); $("joyDraw").hidden = true; $("joysDlg").showModal(); }
+  function renderJoys() {
+    var ul = $("joyList");
+    ul.innerHTML = "";
+    if (!state.plaisirs.length) ul.innerHTML = '<li class="empty" style="border:0;background:none">Ta liste est vide. Ajoute une idée ou pioche dans les suggestions.</li>';
+    state.plaisirs.forEach(function (p, i) {
+      var li = document.createElement("li");
+      li.innerHTML = '<span></span><button type="button" aria-label="Retirer">×</button>';
+      li.firstChild.textContent = p;
+      li.lastChild.addEventListener("click", function () { state.plaisirs.splice(i, 1); save(); renderJoys(); });
+      ul.appendChild(li);
+    });
+    var sg = $("joySuggest");
+    sg.innerHTML = "";
+    JOY_IDEAS.filter(function (j) { return state.plaisirs.indexOf(j) < 0; }).slice(0, 5).forEach(function (j) {
+      var c = document.createElement("button");
+      c.type = "button";
+      c.className = "chip";
+      c.textContent = "+ " + j;
+      c.addEventListener("click", function () { addJoy(j); });
+      sg.appendChild(c);
+    });
+    $("joyPick").disabled = !state.plaisirs.length;
+    $("joyPick").className = "primary btn-center";
+  }
+  function addJoy(t) {
+    t = (t || "").trim();
+    if (!t || state.plaisirs.indexOf(t) >= 0 || state.plaisirs.length >= 15) return;
+    state.plaisirs.push(t);
+    save();
+    renderJoys();
+  }
+  $("joyForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    addJoy($("joyInput").value);
+    $("joyInput").value = "";
+  });
+  var lastJoy = "";
+  $("joyPick").addEventListener("click", function () {
+    var pool = state.plaisirs.filter(function (p) { return p !== lastJoy; });
+    if (!pool.length) pool = state.plaisirs;
+    lastJoy = pool[Math.floor(Math.random() * pool.length)];
+    $("joyDraw").textContent = "Et si tu t’offrais : " + lastJoy.charAt(0).toLowerCase() + lastJoy.slice(1) + " ?";
+    $("joyDraw").hidden = false;
+    markCare();
+  });
+
+  // --- Bouboule, le doudou vocal ---
+  var bb = { st: "idle", info: null, live: null, talkTimer: null };
+  var MIC_LABEL = {
+    idle: "Appuie pour parler",
+    listen: "Je t’écoute… appuie quand tu as fini",
+    think: "Bouboule réfléchit…",
+    talk: "Appuie pour l’arrêter",
+  };
+  var STATE_LABEL = { idle: "t’écoute, tout doux", listen: "t’écoute…", think: "réfléchit…", talk: "te répond…" };
+  function bbSet(st) {
+    bb.st = st;
+    $("bbStage").className = "bb-stage" + (st === "idle" ? "" : " " + st);
+    $("bbState").textContent = STATE_LABEL[st];
+    $("micLabel").textContent = MIC_LABEL[st];
+    $("micBtn").classList.toggle("on", st === "listen");
+    $("micBtn").disabled = st === "think";
+    $("micBtn").setAttribute("aria-label", MIC_LABEL[st]);
+    $("bbSend").disabled = st === "think" || st === "listen";
+  }
+  function bbScroll() { var t = $("bbThread"); t.scrollTop = t.scrollHeight; }
+  function bbBubble(kind, text) {
+    var d = document.createElement("div");
+    d.className = "bb-msg " + kind;
+    d.textContent = text;
+    $("bbThread").appendChild(d);
+    bbScroll();
+    return d;
+  }
+  function bbBear(text, canReplay) {
+    var d = bbBubble("bear", text);
+    if (canReplay && bb.info && bb.info.speak) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "bb-play";
+      b.textContent = "🔊 Réécouter";
+      b.addEventListener("click", function () { Voice.unlock && Voice.unlock(); bbSpeak(text, true); });
+      d.appendChild(document.createElement("br"));
+      d.appendChild(b);
+    }
+    return d;
+  }
+  function bbRender() {
+    $("bbThread").innerHTML = "";
+    state.boubou.forEach(function (m) {
+      if (m.role === "user") bbBubble("you", m.content);
+      else bbBear(m.content, true);
+    });
+  }
+  // Sans synthèse vocale, Bouboule bouge quand même la bouche le temps de « dire » sa phrase.
+  function bbSpeak(text, force) {
+    clearTimeout(bb.talkTimer);
+    bbSet("talk");
+    if ((state.voiceOn || force) && bb.info && bb.info.speak) {
+      Voice.speak(text).then(function () { if (bb.st === "talk") bbSet("idle"); });
+    } else {
+      bb.talkTimer = setTimeout(function () { if (bb.st === "talk") bbSet("idle"); }, Math.min(900 + text.length * 45, 7000));
+    }
+  }
+  function bbHush() { clearTimeout(bb.talkTimer); Voice.hush(); }
+  function bbGreet() {
+    var hi = "Coucou" + (state.name ? " " + state.name : "") + " ! Moi c’est Bouboule, ton doudou. Raconte-moi ce que tu as sur le cœur, je suis tout ouïe.";
+    state.boubou = [{ role: "assistant", content: hi }];
+    save();
+    bbRender();
+    bbSpeak(hi);
+  }
+  Voice.available().then(function (v) {
+    bb.info = v;
+    if (!v.listen) {
+      $("micBtn").hidden = true;
+      $("micLabel").hidden = true;
+      $("bbInput").placeholder = "Écris ou dicte 🎤…";
+      $("bbInfo").textContent = "Le micro intégré n’est pas disponible ici : touche le champ puis le 🎤 de ton clavier pour dicter." + (v.speak ? " Bouboule te répond à voix haute." : " Bouboule te répond par écrit (pas de voix sur cet appareil).");
+    } else if (!v.speak) {
+      $("bbInfo").textContent = "Bouboule t’entend, mais il n’a pas de voix sur cet appareil : il te répond par écrit.";
+    }
+    renderVoiceBtn();
+    if (!$("page-bouboule").hidden) bbRender();
+  }).catch(function () { bb.info = { listen: false, speak: false }; });
+
+  var bbGreeted = false;
+  function bbEnter() {
+    Voice.unlock && Voice.unlock();
+    if (bbGreeted) { bbScroll(); return; }
+    bbGreeted = true;
+    if (state.boubou.length) bbRender();
+    else bbGreet();
+  }
+  function bbLeave() {
+    if (bb.st === "listen") Voice.stop();
+    if (bb.st === "talk") bbHush();
+    if (bb.st !== "think") bbSet("idle");
+  }
+  function voiceError(code) {
+    if (code === "not_granted") return "Il faut autoriser le micro pour que Bouboule t’entende. Tu peux aussi lui écrire.";
+    if (code === "dismissed") return "Pas de souci. Appuie encore quand tu veux lui parler.";
+    if (code === "rate_limited") return "Trop de demandes d’un coup. Réessaie dans un petit moment.";
+    return "Bouboule n’arrive pas à t’entendre… Réessaie, ou écris-lui.";
+  }
+  function bbHeard(text) {
+    if (bb.live) { bb.live.remove(); bb.live = null; }
+    bbSet("idle");
+    if (text && text.trim()) bbSend(text.trim());
+    else bbBubble("err", "Bouboule n’a rien entendu… Tu peux réessayer ?");
+  }
+  $("micBtn").addEventListener("click", function () {
+    Voice.unlock && Voice.unlock();
+    if (bb.st === "think") return;
+    if (bb.st === "talk") { bbHush(); bbSet("idle"); return; }
+    if (bb.st === "listen") { Voice.stop().then(bbHeard); return; }
+    var started = Voice.start(function (t) {
+      if (!bb.live) bb.live = bbBubble("you live", "");
+      bb.live.textContent = t || "…";
+      bbScroll();
+    }, bbHeard);
+    bbSet("listen");
+    started.catch(function (e) {
+      if (bb.live) { bb.live.remove(); bb.live = null; }
+      if (bb.st === "listen") bbSet("idle");
+      bbBubble("err", voiceError(e && e.code));
+    });
+  });
+  function bbSend(text) {
+    state.boubou.push({ role: "user", content: text });
+    state.boubou = state.boubou.slice(-30);
+    save();
+    bbBubble("you", text);
+    if (CRISIS.test(text)) $("bbCrisis").hidden = false;
+    markCare();
+    bbSet("think");
+    var bear = bbBubble("bear", "");
+    bear.innerHTML = '<span class="typing" aria-label="Bouboule réfléchit"><b></b><b></b><b></b></span>';
+    var p = payload();
+    p.persona = "bouboule";
+    p.messages = state.boubou;
+    Transport.chat(p, function (t) {
+      var i = t.indexOf("⚠︎");
+      bear.textContent = (i >= 0 ? t.slice(0, i) : t).trim() || "…";
+      bbScroll();
+    }).then(function (full) {
+      full = (full || "").trim();
+      bear.remove();
+      var cut = full.indexOf("⚠︎");
+      if (cut >= 0 || !full) {
+        state.boubou.pop();
+        save();
+        bbBubble("err", cut >= 0 ? full.slice(cut + 2).trim() : "Bouboule n’a pas trouvé ses mots. Tu peux lui redire ?");
+        bbSet("idle");
+        return;
+      }
+      state.boubou.push({ role: "assistant", content: full });
+      save();
+      bbBear(full, true);
+      bbSpeak(full);
+    }).catch(function (e) {
+      bear.remove();
+      state.boubou.pop();
+      save();
+      bbBubble("err", errorText(e && e.code));
+      bbSet("idle");
+    });
+  }
+  $("bbForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    Voice.unlock && Voice.unlock();
+    var t = $("bbInput").value.trim();
+    if (!t || bb.st === "think" || bb.st === "listen") return;
+    $("bbInput").value = "";
+    if (bb.st === "talk") bbHush();
+    bbSend(t);
+  });
+  function renderVoiceBtn() {
+    var can = !bb.info || bb.info.speak;
+    $("bbVoice").hidden = !can;
+    $("bbVoice").textContent = state.voiceOn ? "🔊" : "🔇";
+    $("bbVoice").setAttribute("aria-label", state.voiceOn ? "Couper la voix de Bouboule" : "Remettre la voix de Bouboule");
+    $("bbVoice").setAttribute("aria-pressed", state.voiceOn ? "true" : "false");
+  }
+  renderVoiceBtn();
+  $("bbVoice").addEventListener("click", function () {
+    state.voiceOn = !state.voiceOn;
+    save();
+    renderVoiceBtn();
+    if (!state.voiceOn && bb.st === "talk") { Voice.hush(); }
+  });
+  $("bbNew").addEventListener("click", function () {
+    if (bb.st === "listen") Voice.stop();
+    bbHush();
+    bbSet("idle");
+    $("bbCrisis").hidden = true;
+    bbGreet();
+  });
+
+  // --- Journal météo ---
+  function renderJournal() {
+    picker($("todayMoods"), MOODS, state.journal[todayKey()] || "", function (id) {
+      var before = careCount();
+      state.journal[todayKey()] = id;
+      save();
+      checkUnlocks(before);
+      renderJournal();
+    });
+    var cal = $("cal");
+    cal.innerHTML = "";
+    var today = new Date();
+    today.setHours(12, 0, 0, 0);
+    var dow = (today.getDay() + 6) % 7; // lundi = 0
+    var start = new Date(today);
+    start.setDate(today.getDate() - dow - 21);
+    var weeks = [[], [], [], []];
+    for (var i = 0; i < 28; i++) {
+      var d = new Date(start);
+      d.setDate(start.getDate() + i);
+      var k = key(d);
+      var m = state.journal[k];
+      var cell = document.createElement("div");
+      cell.className = "day" + (m ? " " + m : "") + (k === todayKey() ? " today" : "") + (d > today ? " future" : "");
+      cell.innerHTML = '<span class="n"></span>';
+      cell.firstChild.textContent = d.getDate();
+      if (m) cell.appendChild(document.createTextNode(MOOD[m].e));
+      cell.setAttribute("aria-label", d.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" }) + (m ? " : " + MOOD[m].t : " : rien noté"));
+      cal.appendChild(cell);
+      if (m && d <= today) weeks[Math.floor(i / 7)].push(m);
+    }
+    $("bilan").innerHTML = "";
+    $("bilan").appendChild(bilan(weeks[3], weeks[2]));
+  }
+  function avg(list) {
+    if (!list.length) return null;
+    return list.reduce(function (a, m) { return a + MOOD[m].score; }, 0) / list.length;
+  }
+  function bilan(week, prev) {
+    var frag = document.createDocumentFragment();
+    var p = document.createElement("div");
+    var a = avg(week), b = avg(prev);
+    var msg;
+    if (a === null) msg = "Rien de noté cette semaine pour l’instant. Choisis ta météo du jour juste au-dessus.";
+    else if (b === null) msg = week.length === 1 ? "Première météo notée cette semaine. On regardera l’évolution ensemble." : "Voilà ta semaine en un coup d’œil.";
+    else if (a - b >= 0.6) msg = "Ta semaine est plus lumineuse que la précédente 🌤️ Qu’est-ce qui a aidé, à ton avis ?";
+    else if (b - a >= 0.6) msg = "Le ciel est plus chargé que la semaine dernière. Prends soin de toi, et viens m’en parler si tu veux.";
+    else msg = "Une semaine assez proche de la précédente.";
+    p.textContent = msg;
+    frag.appendChild(p);
+    if (week.length) {
+      var c = document.createElement("div");
+      c.className = "counts";
+      MOODS.forEach(function (m) {
+        var n = week.filter(function (x) { return x === m.id; }).length;
+        if (!n) return;
+        var s = document.createElement("span");
+        s.textContent = m.e + " " + n;
+        s.setAttribute("aria-label", n + " " + m.t);
+        c.appendChild(s);
+      });
+      frag.appendChild(c);
+    }
+    return frag;
+  }
+
+  // --- Mon Nuage ---
+  function renderMe() {
+    var n = careCount();
+    $("careDays").textContent = n === 0 ? "Un tout nouveau nuage" : n + (n > 1 ? " jours" : " jour") + " à prendre soin de toi";
+    var next = ACCS.filter(function (a) { return a.at > n; })[0];
+    var prevAt = ACCS.filter(function (a) { return a.at <= n; }).reduce(function (m, a) { return Math.max(m, a.at); }, 0);
+    if (next) {
+      var left = next.at - n;
+      $("careNext").textContent = "Prochain cadeau dans " + left + (left > 1 ? " jours" : " jour") + " : " + next.e + " " + next.t;
+      $("careBar").style.width = ((n - prevAt) / (next.at - prevAt) * 100) + "%";
+    } else {
+      $("careNext").textContent = "Nuage a tous ses accessoires. Merci de prendre soin de toi 💜";
+      $("careBar").style.width = "100%";
+    }
+    var box = $("accs");
+    box.innerHTML = "";
+    ACCS.forEach(function (a) {
+      var got = n >= a.at;
+      var on = state.wear.indexOf(a.id) >= 0;
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "acc";
+      b.disabled = !got;
+      b.setAttribute("aria-pressed", got && on ? "true" : "false");
+      b.innerHTML = '<span class="e"></span><span class="t"></span><small></small>';
+      b.querySelector(".e").textContent = got ? a.e : "🔒";
+      b.querySelector(".t").textContent = a.t;
+      b.querySelector("small").textContent = got ? (on ? "Porté" : "Rangé") : a.at + " jours";
+      b.addEventListener("click", function () {
+        var i = state.wear.indexOf(a.id);
+        if (i >= 0) state.wear.splice(i, 1); else state.wear.push(a.id);
+        save();
+        paintClouds(document, true);
+        renderMe();
+      });
+      box.appendChild(b);
+    });
+    renderFacts();
+  }
+  function renderFacts() {
+    var ul = $("facts");
+    ul.innerHTML = "";
+    if (!state.memory.faits.length) ul.innerHTML = '<li class="empty" style="border:0;background:none">Je n’ai encore rien noté. Au fil de nos conversations, je garderai ici les choses importantes que tu me confies.</li>';
+    state.memory.faits.forEach(function (f, i) {
+      var li = document.createElement("li");
+      li.innerHTML = '<span></span><button type="button" aria-label="Oublier ceci">×</button>';
+      li.firstChild.textContent = f;
+      li.lastChild.addEventListener("click", function () { state.memory.faits.splice(i, 1); save(); renderFacts(); });
+      ul.appendChild(li);
+    });
+    $("forgetAll").hidden = !state.memory.faits.length && !state.memory.dernier_sujet;
+  }
+  // Boutons d'effacement : un second appui confirme.
+  function twoTap(btn, label, action) {
+    var armed = false, timer = null;
+    btn.addEventListener("click", function () {
+      if (!armed) {
+        armed = true;
+        btn.textContent = "Sûr·e ? Appuie encore";
+        timer = setTimeout(function () { armed = false; btn.textContent = label; }, 3000);
+        return;
+      }
+      clearTimeout(timer);
+      armed = false;
+      btn.textContent = label;
+      action();
+    });
+  }
+  twoTap($("forgetAll"), "Tout oublier", function () {
+    state.memory = { faits: [], dernier_sujet: "" };
+    save();
+    renderFacts();
+    renderWelcome();
+    toast("C’est oublié.");
+  });
+  twoTap($("wipeAll"), "Effacer toutes mes données", function () {
+    try { localStorage.removeItem(LS); localStorage.removeItem("lumi-v1"); } catch (e) {}
+    state = load();
+    paintClouds(document, true);
+    $("thread").innerHTML = "";
+    $("chat").hidden = true;
+    $("welcome").hidden = false;
+    renderWelcome();
+    renderMe();
+    toast("Tout est effacé. Nuage repart de zéro.");
+  });
+
+  // --- Aide et fermeture des fenêtres ---
+  $("sosBtn").addEventListener("click", function () { $("helpDlg").showModal(); });
+  $("crisisClose").addEventListener("click", function () { $("crisis").hidden = true; });
+  document.addEventListener("click", function (e) {
+    var c = e.target.closest("[data-close]");
+    if (c) c.closest("dialog").close();
+  });
+
+  // --- Démarrage ---
+  renderWelcome();
+  if (state.messages.length) {
+    showChat();
+    state.messages.forEach(function (m) { bubble(m.role, m.content); });
+    if (state.messages[state.messages.length - 1].role === "user") ask();
+  }
+  updateSend();
+})();
+</script>
+</body>
+</html>

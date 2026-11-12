@@ -1,0 +1,15 @@
+{
+  "name": "Nuage",
+  "short_name": "Nuage",
+  "description": "Un espace pour dire ce qui pèse et repartir un peu plus léger.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F6F4FB",
+  "theme_color": "#6A4FD8",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
