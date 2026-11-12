@@ -188,7 +188,7 @@
   /* --- Barre de menu --- */
   .tabs {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     border-top: 1px solid var(--line);
     background: var(--surface);
     padding: 6px var(--gut-r) calc(env(safe-area-inset-bottom, 0px) + 6px) var(--gut);
@@ -284,7 +284,7 @@
   .row.me { justify-content: flex-end; }
   .row .cloud { --size: 34px; }
   .row.me .cloud { display: none; }
-  .row.cont .cloud { visibility: hidden; }
+  .row.cont .cloud, .row.cont .teddy-mini { visibility: hidden; }
   @keyframes pop { from { opacity: 0; transform: translateY(6px); } }
   .bubble {
     max-width: min(82%, 30em);
@@ -531,7 +531,6 @@
   .feature .ico { flex: none; width: 60px; height: 60px; border-radius: 18px; background: rgba(255,255,255,.22); display: grid; place-items: center; font-size: 32px; }
   .feature b { display: block; font: 800 21px/1.2 var(--display); }
   .feature small { display: block; font-size: 15px; line-height: 1.45; opacity: .95; margin-top: 4px; }
-  .feature.teddy { background: linear-gradient(135deg, #C98A4E, #E7A96B); box-shadow: 0 12px 30px rgba(201, 138, 78, .3); max-width: 440px; margin: 6px 0 0; }
   .chip.fire { background: var(--fire-soft); color: var(--fire-ink); border-color: transparent; }
   .tool-card .ico.c1 { background: var(--soft); }
   .tool-card .ico.c2 { background: var(--mint-soft); }
@@ -551,66 +550,9 @@
   .result-sub { text-align: center; color: var(--muted); margin: 0 0 18px; }
   .stack { display: grid; gap: 8px; }
 
-  /* Bouboule */
-  .bb-head { display: flex; align-items: center; gap: 12px; padding: 14px var(--gut-r) 6px var(--gut); }
-  .bb-head .bb-stage { flex: none; }
-  .bb-head .txt { flex: 1; min-width: 0; }
-  .bb-head h2 { margin: 0; font: 800 24px/1.15 var(--display); }
-  .bb-head p { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
-  .bb-head .state { font-weight: 800; color: var(--soft-ink); }
-  .bb-head .btns { display: flex; gap: 6px; }
-  .bb-stage { position: relative; width: 108px; height: 108px; display: grid; place-items: center; }
-  .bb-ring { position: absolute; inset: 2px; border-radius: 50%; border: 3px solid var(--me); opacity: 0; }
-  .bb-stage.listen .bb-ring { animation: ring 1.4s ease-out infinite; }
-  @keyframes ring { 0% { transform: scale(.85); opacity: .6; } 100% { transform: scale(1.15); opacity: 0; } }
-  .teddy { width: 100px; height: 100px; overflow: visible; animation: breathe 4s ease-in-out infinite; }
-  @keyframes breathe { 50% { transform: scale(1.03); } }
-  .teddy .ear { transform-box: fill-box; transform-origin: 50% 100%; }
-  .listen .teddy .ear.l { animation: wiggleL .8s ease-in-out infinite; }
-  .listen .teddy .ear.r { animation: wiggleR .8s ease-in-out infinite; }
-  @keyframes wiggleL { 50% { transform: rotate(-10deg); } }
-  @keyframes wiggleR { 50% { transform: rotate(10deg); } }
-  .teddy .eyes { transition: transform .3s; }
-  .think .teddy .eyes { transform: translate(5px, -5px); }
-  .teddy .blink { transform-box: fill-box; transform-origin: center; animation: blink 5s infinite; }
-  .teddy .mouth-open { transform-box: fill-box; transform-origin: 50% 0; opacity: 0; }
-  .talk .teddy .smile { opacity: 0; }
-  .talk .teddy .mouth-open { opacity: 1; animation: talk .28s ease-in-out infinite alternate; }
-  @keyframes talk { from { transform: scaleY(.25); } to { transform: scaleY(1); } }
-  .think .teddy { animation: tilt 1.6s ease-in-out infinite; }
-  @keyframes tilt { 50% { transform: rotate(-4deg); } }
-
-  .bb-thread { flex: 1; min-height: 0; overflow-y: auto; padding: 10px var(--gut-r) 12px var(--gut); display: flex; flex-direction: column; gap: 12px; }
-  .bb-msg { max-width: 86%; padding: 12px 16px; border-radius: 22px; font-size: 17px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; animation: pop .25s ease-out; }
-  .bb-msg.bear { align-self: flex-start; background: #FFF4E6; color: #4A2E1E; border: 1px solid #F2D9BC; border-bottom-left-radius: 6px; }
-  .bb-msg.you { align-self: flex-end; background: linear-gradient(135deg, var(--me), var(--me-2)); color: #fff; border-bottom-right-radius: 6px; }
-  .bb-msg.you.live { opacity: .75; font-style: italic; }
-  .bb-msg.err { align-self: center; max-width: 92%; font-size: 14px; background: var(--warn-bg); color: var(--warn-ink); border: 1px solid var(--warn-line); border-radius: 16px; text-align: center; }
-  .bb-msg .typing b { background: #B57A42; }
-  .bb-play { display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; border: 0; background: none; color: #9B6331; font-size: 13px; font-weight: 800; cursor: pointer; padding: 2px 0; }
-
-  .bb-dock { border-top: 1px solid var(--line); padding: 12px var(--gut-r) 14px var(--gut); display: flex; flex-direction: column; align-items: center; gap: 8px; }
-  .mic {
-    width: 76px;
-    height: 76px;
-    border-radius: 50%;
-    border: 0;
-    cursor: pointer;
-    color: #fff;
-    background: linear-gradient(135deg, var(--me), var(--me-2));
-    box-shadow: 0 10px 24px color-mix(in srgb, var(--me) 40%, transparent);
-    display: grid;
-    place-items: center;
-    transition: transform .15s;
-  }
-  .mic:active { transform: scale(.95); }
-  .mic.on { background: linear-gradient(135deg, var(--fire), var(--fire-2)); }
-  .mic:disabled { opacity: .5; cursor: default; }
-  .mic-label { font-weight: 800; font-size: 15px; min-height: 1.5em; text-align: center; }
-  .bb-type { width: 100%; display: flex; gap: 8px; }
-  .bb-type input { flex: 1; min-width: 0; }
-  .bb-hint { font-size: 13px; color: var(--muted); text-align: center; margin: 0; max-width: 30em; }
-  .bb-dock .crisis { margin: 0; width: 100%; }
+  /* Bouboule, le doudou de Nuage (présenté dans la conversation) */
+  .teddy-mini { flex: none; width: 34px; height: 34px; display: block; }
+  .row.bouboule .bubble { background: #FFF4E6; color: #4A2E1E; border: 1px solid #F2D9BC; border-bottom-left-radius: 6px; }
 
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -655,10 +597,6 @@
           </div>
 
           <button type="button" class="primary" id="startBtn" disabled>On commence</button>
-          <button type="button" class="feature teddy" data-go="bouboule">
-            <span class="ico">🧸</span>
-            <span><b>Parler à voix haute</b><small>Bouboule, le doudou, t’écoute et te répond avec sa petite voix.</small></span>
-          </button>
           <p class="fine">Nuage est une intelligence artificielle : une oreille attentive, pas un médecin ni un psy. Tout reste sur ton appareil ; tes messages sont envoyés à l’IA uniquement pour te répondre. Si tu es en danger, appelle le <b>3114</b> (gratuit, 24h/24) ou le <b>112</b>.</p>
         </div>
       </div>
@@ -689,59 +627,6 @@
       </div>
     </section>
 
-    <!-- BOUBOULE -->
-    <section class="page" id="page-bouboule" data-page="bouboule" hidden>
-      <div class="bb-head">
-        <div class="bb-stage" id="bbStage">
-          <div class="bb-ring"></div>
-          <svg class="teddy" viewBox="0 0 200 200" aria-hidden="true">
-            <g class="ear l"><circle cx="50" cy="56" r="28" fill="#C98A4E"/><circle cx="50" cy="56" r="15" fill="#F2C9A0"/></g>
-            <g class="ear r"><circle cx="150" cy="56" r="28" fill="#C98A4E"/><circle cx="150" cy="56" r="15" fill="#F2C9A0"/></g>
-            <ellipse cx="100" cy="186" rx="62" ry="22" fill="#B57A42"/>
-            <circle cx="100" cy="106" r="72" fill="#D99A5B"/>
-            <path d="M150 74c-6-6-15 0-9 8l9 8 9-8c6-8-3-14-9-8z" fill="#FF7A90"/>
-            <ellipse cx="100" cy="132" rx="36" ry="28" fill="#F4D3AE"/>
-            <g class="eyes">
-              <g class="blink"><ellipse cx="72" cy="96" rx="8" ry="10" fill="#3A2618"/><circle cx="75" cy="92" r="3" fill="#fff"/></g>
-              <g class="blink"><ellipse cx="128" cy="96" rx="8" ry="10" fill="#3A2618"/><circle cx="131" cy="92" r="3" fill="#fff"/></g>
-            </g>
-            <ellipse cx="58" cy="124" rx="10" ry="6" fill="#FF9DB0" opacity=".6"/>
-            <ellipse cx="142" cy="124" rx="10" ry="6" fill="#FF9DB0" opacity=".6"/>
-            <ellipse cx="100" cy="118" rx="12" ry="9" fill="#4A2E1E"/>
-            <path class="smile" d="M86 136q14 12 28 0" fill="none" stroke="#4A2E1E" stroke-width="4" stroke-linecap="round"/>
-            <ellipse class="mouth-open" cx="100" cy="141" rx="11" ry="9" fill="#7A2E2E"/>
-            <ellipse cx="62" cy="190" rx="16" ry="11" fill="#C98A4E"/><ellipse cx="138" cy="190" rx="16" ry="11" fill="#C98A4E"/>
-          </svg>
-        </div>
-        <div class="txt">
-          <h2>Bouboule</h2>
-          <p class="state" id="bbState">t’écoute, tout doux</p>
-        </div>
-        <div class="btns">
-          <button type="button" class="icon-btn" id="bbVoice" aria-pressed="true" title="Voix de Bouboule"></button>
-          <button type="button" class="icon-btn" id="bbNew" aria-label="Recommencer avec Bouboule" title="Recommencer">
-            <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4h4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-        </div>
-      </div>
-      <div class="bb-thread" id="bbThread" role="log" aria-live="polite" aria-label="Conversation avec Bouboule"></div>
-      <div class="bb-dock">
-        <div class="crisis" id="bbCrisis" role="alert" hidden>
-          <strong>Tu n’es pas seul·e avec ça.</strong>
-          Des humains sont là pour t’écouter tout de suite, gratuitement : appelle le <b>3114</b> (24h/24). En cas de danger immédiat : <b>112</b>.
-        </div>
-        <button type="button" class="mic" id="micBtn" aria-label="Parler à Bouboule">
-          <svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4M9 21h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        </button>
-        <div class="mic-label" id="micLabel">Appuie pour parler</div>
-        <form class="bb-type" id="bbForm">
-          <input type="text" id="bbInput" maxlength="1000" placeholder="Ou écris à Bouboule…" aria-label="Message pour Bouboule">
-          <button type="submit" class="secondary" id="bbSend">Envoyer</button>
-        </form>
-        <p class="bb-hint" id="bbInfo">Appuie une fois pour parler, une deuxième fois quand tu as fini.</p>
-      </div>
-    </section>
-
     <!-- OUTILS -->
     <section class="page" id="page-outils" data-page="outils" hidden>
       <div class="scroll">
@@ -760,11 +645,6 @@
           <button type="button" class="tool-card" data-open="ground">
             <span class="ico c2">🌿</span>
             <span><b>Ancrage 5-4-3-2-1</b><small>Quand l’angoisse monte : tes cinq sens te ramènent ici et maintenant.</small></span>
-            <svg class="go" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
-          </button>
-          <button type="button" class="tool-card" data-go="bouboule">
-            <span class="ico c3">🧸</span>
-            <span><b>Parler à Bouboule</b><small>Ton doudou t’écoute à voix haute, pour un moment tout doux.</small></span>
             <svg class="go" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
           </button>
           <button type="button" class="tool-card" data-open="joys">
@@ -841,10 +721,6 @@
     <button type="button" class="tab" data-tab="parler" aria-current="page">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-5 4v-4H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
       Parler
-    </button>
-    <button type="button" class="tab" data-tab="bouboule">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6.5" cy="7" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="7" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="13.5" r="7" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="15.5" r="1.4" fill="currentColor"/></svg>
-      Bouboule
     </button>
     <button type="button" class="tab" data-tab="outils">
       <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M3 12h18" fill="none" stroke="currentColor" stroke-width="2"/></svg>
@@ -1024,6 +900,7 @@
       care: s.care || {},
       wear: s.wear || [],
       plaisirs: s.plaisirs || [],
+      metBouboule: !!s.metBouboule,
       boubou: s.boubou || [],
       voiceOn: s.voiceOn !== false,
     };
@@ -1069,77 +946,6 @@
     },
   };
 
-  // --- Voix (reconnaissance + synthèse du navigateur ; une autre version peut la remplacer) ---
-  var Voice = window.NuageVoice || (function () {
-    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    var synth = window.speechSynthesis;
-    var rec = null, finals = "", endWait = null, autoEnd = null;
-    function frVoice() {
-      var vs = synth.getVoices();
-      return vs.find(function (v) { return /^fr[-_]FR/i.test(v.lang); }) || vs.find(function (v) { return /^fr/i.test(v.lang); }) || null;
-    }
-    return {
-      available: function () { return Promise.resolve({ listen: !!SR, speak: !!synth }); },
-      start: function (onPartial, onAutoEnd) {
-        finals = "";
-        autoEnd = onAutoEnd;
-        return new Promise(function (resolve, reject) {
-          if (!SR) return reject({ code: "unavailable" });
-          rec = new SR();
-          rec.lang = "fr-FR";
-          rec.continuous = true;
-          rec.interimResults = true;
-          rec.onstart = function () { resolve(); };
-          rec.onresult = function (e) {
-            var interim = "";
-            for (var i = e.resultIndex; i < e.results.length; i++) {
-              if (e.results[i].isFinal) finals += e.results[i][0].transcript + " ";
-              else interim += e.results[i][0].transcript;
-            }
-            onPartial((finals + interim).trim());
-          };
-          rec.onerror = function (e) {
-            reject({ code: e.error === "not-allowed" || e.error === "service-not-allowed" ? "not_granted" : "upstream_error" });
-          };
-          rec.onend = function () {
-            rec = null;
-            if (endWait) { endWait(finals.trim()); endWait = null; }
-            else if (autoEnd) { var f = autoEnd; autoEnd = null; f(finals.trim()); }
-          };
-          try { rec.start(); } catch (err) { reject({ code: "upstream_error" }); }
-        });
-      },
-      stop: function () {
-        autoEnd = null;
-        return new Promise(function (resolve) {
-          if (!rec) return resolve(finals.trim());
-          endWait = resolve;
-          rec.stop();
-        });
-      },
-      speak: function (text) {
-        return new Promise(function (resolve) {
-          if (!synth) return resolve();
-          synth.cancel();
-          var u = new SpeechSynthesisUtterance(text);
-          u.lang = "fr-FR";
-          var v = frVoice();
-          if (v) u.voice = v;
-          u.pitch = 1.3;
-          u.rate = 1;
-          u.onend = u.onerror = function () { resolve(); };
-          synth.speak(u);
-        });
-      },
-      hush: function () { if (synth) synth.cancel(); },
-      unlock: function () {
-        if (!synth || this._unlocked) return;
-        this._unlocked = true;
-        try { var u = new SpeechSynthesisUtterance(" "); u.volume = 0; synth.speak(u); } catch (e) {}
-      },
-    };
-  })();
-
   // --- Le personnage et ses accessoires ---
   function star(x, y, r) {
     var p = [];
@@ -1180,6 +986,15 @@
     }
     if (w.etoiles) s += star(6, 20, 7) + star(114, 14, 6) + star(100, -2, 4.5);
     return s + "</svg>";
+  }
+  function teddySVG() {
+    return '<svg class="teddy-mini" viewBox="0 0 200 200" aria-hidden="true">' +
+      '<circle cx="50" cy="56" r="28" fill="#C98A4E"/><circle cx="50" cy="56" r="15" fill="#F2C9A0"/>' +
+      '<circle cx="150" cy="56" r="28" fill="#C98A4E"/><circle cx="150" cy="56" r="15" fill="#F2C9A0"/>' +
+      '<circle cx="100" cy="110" r="74" fill="#D99A5B"/><ellipse cx="100" cy="136" rx="36" ry="28" fill="#F4D3AE"/>' +
+      '<ellipse cx="72" cy="100" rx="8" ry="10" fill="#3A2618"/><ellipse cx="128" cy="100" rx="8" ry="10" fill="#3A2618"/>' +
+      '<ellipse cx="100" cy="122" rx="12" ry="9" fill="#4A2E1E"/>' +
+      '<path d="M86 140q14 12 28 0" fill="none" stroke="#4A2E1E" stroke-width="5" stroke-linecap="round"/></svg>';
   }
   function paintClouds(root, force) {
     var slots = (root || document).querySelectorAll("[data-cloud]");
@@ -1240,7 +1055,6 @@
       else tabs[j].removeAttribute("aria-current");
     }
     $("newBtn").hidden = !(name === "parler" && !$("chat").hidden);
-    if (name === "bouboule") bbEnter(); else bbLeave();
     if (name === "journal") renderJournal();
     if (name === "moi") renderMe();
   }
@@ -1304,6 +1118,12 @@
     markCare();
     var g = GREET[state.mood] || GREET.nuageux;
     var lines = [(state.name ? "Coucou " + state.name + ". " : "Coucou. ") + g[0]];
+    if (!state.metBouboule) {
+      lines.push("Avant tout, je te présente quelqu’un : Bouboule, mon doudou 🧸");
+      lines.push({ role: "bouboule", text: "Coucou, moi c’est Bouboule ! 🧸 Je parle pas beaucoup, mais je fais les meilleurs câlins du monde. Je reste juste là, tout près, pendant que tu parles à Nuage." });
+      state.metBouboule = true;
+      save();
+    }
     var last = state.memory.dernier_sujet;
     if (last) lines.push("Au fait, la dernière fois tu me parlais de " + last + ". Ça a évolué depuis ? Ou tu préfères parler d’autre chose aujourd’hui ?");
     else lines.push(g[1]);
@@ -1349,13 +1169,14 @@
     var k = 0;
     (function next() {
       if (k >= lines.length) { busy = false; updateSend(); $("input").focus(); return; }
-      var t = typing();
+      var line = typeof lines[k] === "string" ? { role: "assistant", text: lines[k] } : lines[k];
+      var t = typing(line.role);
       setTimeout(function () {
         t.remove();
-        push("assistant", lines[k]);
+        push(line.role, line.text);
         k++;
         setTimeout(next, 350);
-      }, 600 + Math.min(lines[k].length * 16, 1500));
+      }, 600 + Math.min(line.text.length * 16, 1500));
     })();
   }
 
@@ -1363,12 +1184,12 @@
   function bubble(role, text) {
     var thread = $("thread");
     var prev = thread.lastElementChild;
-    var cls = role === "user" ? "me" : "bot";
+    var cls = role === "user" ? "me" : role === "bouboule" ? "bouboule" : "bot";
     var row = document.createElement("div");
     row.className = "row " + cls;
     if (prev && prev.classList.contains(cls)) row.classList.add("cont");
-    row.innerHTML = '<span data-cloud></span><div class="bubble"></div>';
-    paintClouds(row);
+    if (role === "bouboule") row.innerHTML = teddySVG() + '<div class="bubble"></div>';
+    else { row.innerHTML = '<span data-cloud></span><div class="bubble"></div>'; paintClouds(row); }
     row.querySelector(".bubble").textContent = text;
     thread.appendChild(row);
     scroll();
@@ -1386,9 +1207,9 @@
     save();
     return bubble(role, text);
   }
-  function typing() {
-    var row = bubble("assistant", "");
-    row.querySelector(".bubble").innerHTML = '<span class="typing" aria-label="Nuage écrit"><b></b><b></b><b></b></span>';
+  function typing(role) {
+    var row = bubble(role || "assistant", "");
+    row.querySelector(".bubble").innerHTML = '<span class="typing" aria-label="' + (role === "bouboule" ? "Bouboule" : "Nuage") + ' écrit"><b></b><b></b><b></b></span>';
     setTalking(true);
     return { row: row, remove: function () { row.remove(); setTalking(false); } };
   }
@@ -1447,8 +1268,11 @@
     ask();
   }
 
+  function aiMessages() {
+    return state.messages.filter(function (m) { return m.role === "user" || m.role === "assistant"; });
+  }
   function payload() {
-    return { name: state.name, mood: state.mood, style: state.style, memory: state.memory, plaisirs: state.plaisirs, messages: state.messages };
+    return { name: state.name, mood: state.mood, style: state.style, memory: state.memory, plaisirs: state.plaisirs, messages: aiMessages() };
   }
 
   function ask() {
@@ -1523,7 +1347,7 @@
     if (memoBusy || fresh < 1 || (!final && fresh < 4)) return;
     memoBusy = true;
     var count = users, conv = state.convId;
-    Transport.memo({ memory: state.memory, messages: state.messages.slice(-30) }).then(function (m) {
+    Transport.memo({ memory: state.memory, messages: aiMessages().slice(-30) }).then(function (m) {
       if (m && Array.isArray(m.faits)) {
         state.memory = { faits: m.faits.slice(0, 8), dernier_sujet: m.dernier_sujet || "" };
         if (conv === state.convId) state.memoAt = count;
@@ -1826,199 +1650,6 @@
     $("joyDraw").textContent = "Et si tu t’offrais : " + lastJoy.charAt(0).toLowerCase() + lastJoy.slice(1) + " ?";
     $("joyDraw").hidden = false;
     markCare();
-  });
-
-  // --- Bouboule, le doudou vocal ---
-  var bb = { st: "idle", info: null, live: null, talkTimer: null };
-  var MIC_LABEL = {
-    idle: "Appuie pour parler",
-    listen: "Je t’écoute… appuie quand tu as fini",
-    think: "Bouboule réfléchit…",
-    talk: "Appuie pour l’arrêter",
-  };
-  var STATE_LABEL = { idle: "t’écoute, tout doux", listen: "t’écoute…", think: "réfléchit…", talk: "te répond…" };
-  function bbSet(st) {
-    bb.st = st;
-    $("bbStage").className = "bb-stage" + (st === "idle" ? "" : " " + st);
-    $("bbState").textContent = STATE_LABEL[st];
-    $("micLabel").textContent = MIC_LABEL[st];
-    $("micBtn").classList.toggle("on", st === "listen");
-    $("micBtn").disabled = st === "think";
-    $("micBtn").setAttribute("aria-label", MIC_LABEL[st]);
-    $("bbSend").disabled = st === "think" || st === "listen";
-  }
-  function bbScroll() { var t = $("bbThread"); t.scrollTop = t.scrollHeight; }
-  function bbBubble(kind, text) {
-    var d = document.createElement("div");
-    d.className = "bb-msg " + kind;
-    d.textContent = text;
-    $("bbThread").appendChild(d);
-    bbScroll();
-    return d;
-  }
-  function bbBear(text, canReplay) {
-    var d = bbBubble("bear", text);
-    if (canReplay && bb.info && bb.info.speak) {
-      var b = document.createElement("button");
-      b.type = "button";
-      b.className = "bb-play";
-      b.textContent = "🔊 Réécouter";
-      b.addEventListener("click", function () { Voice.unlock && Voice.unlock(); bbSpeak(text, true); });
-      d.appendChild(document.createElement("br"));
-      d.appendChild(b);
-    }
-    return d;
-  }
-  function bbRender() {
-    $("bbThread").innerHTML = "";
-    state.boubou.forEach(function (m) {
-      if (m.role === "user") bbBubble("you", m.content);
-      else bbBear(m.content, true);
-    });
-  }
-  // Sans synthèse vocale, Bouboule bouge quand même la bouche le temps de « dire » sa phrase.
-  function bbSpeak(text, force) {
-    clearTimeout(bb.talkTimer);
-    bbSet("talk");
-    if ((state.voiceOn || force) && bb.info && bb.info.speak) {
-      Voice.speak(text).then(function () { if (bb.st === "talk") bbSet("idle"); });
-    } else {
-      bb.talkTimer = setTimeout(function () { if (bb.st === "talk") bbSet("idle"); }, Math.min(900 + text.length * 45, 7000));
-    }
-  }
-  function bbHush() { clearTimeout(bb.talkTimer); Voice.hush(); }
-  function bbGreet() {
-    var hi = "Coucou" + (state.name ? " " + state.name : "") + " ! Moi c’est Bouboule, ton doudou. Raconte-moi ce que tu as sur le cœur, je suis tout ouïe.";
-    state.boubou = [{ role: "assistant", content: hi }];
-    save();
-    bbRender();
-    bbSpeak(hi);
-  }
-  Voice.available().then(function (v) {
-    bb.info = v;
-    if (!v.listen) {
-      $("micBtn").hidden = true;
-      $("micLabel").hidden = true;
-      $("bbInput").placeholder = "Écris ou dicte 🎤…";
-      $("bbInfo").textContent = "Le micro intégré n’est pas disponible ici : touche le champ puis le 🎤 de ton clavier pour dicter." + (v.speak ? " Bouboule te répond à voix haute." : " Bouboule te répond par écrit (pas de voix sur cet appareil).");
-    } else if (!v.speak) {
-      $("bbInfo").textContent = "Bouboule t’entend, mais il n’a pas de voix sur cet appareil : il te répond par écrit.";
-    }
-    renderVoiceBtn();
-    if (!$("page-bouboule").hidden) bbRender();
-  }).catch(function () { bb.info = { listen: false, speak: false }; });
-
-  var bbGreeted = false;
-  function bbEnter() {
-    Voice.unlock && Voice.unlock();
-    if (bbGreeted) { bbScroll(); return; }
-    bbGreeted = true;
-    if (state.boubou.length) bbRender();
-    else bbGreet();
-  }
-  function bbLeave() {
-    if (bb.st === "listen") Voice.stop();
-    if (bb.st === "talk") bbHush();
-    if (bb.st !== "think") bbSet("idle");
-  }
-  function voiceError(code) {
-    if (code === "not_granted") return "Il faut autoriser le micro pour que Bouboule t’entende. Tu peux aussi lui écrire.";
-    if (code === "dismissed") return "Pas de souci. Appuie encore quand tu veux lui parler.";
-    if (code === "rate_limited") return "Trop de demandes d’un coup. Réessaie dans un petit moment.";
-    return "Bouboule n’arrive pas à t’entendre… Réessaie, ou écris-lui.";
-  }
-  function bbHeard(text) {
-    if (bb.live) { bb.live.remove(); bb.live = null; }
-    bbSet("idle");
-    if (text && text.trim()) bbSend(text.trim());
-    else bbBubble("err", "Bouboule n’a rien entendu… Tu peux réessayer ?");
-  }
-  $("micBtn").addEventListener("click", function () {
-    Voice.unlock && Voice.unlock();
-    if (bb.st === "think") return;
-    if (bb.st === "talk") { bbHush(); bbSet("idle"); return; }
-    if (bb.st === "listen") { Voice.stop().then(bbHeard); return; }
-    var started = Voice.start(function (t) {
-      if (!bb.live) bb.live = bbBubble("you live", "");
-      bb.live.textContent = t || "…";
-      bbScroll();
-    }, bbHeard);
-    bbSet("listen");
-    started.catch(function (e) {
-      if (bb.live) { bb.live.remove(); bb.live = null; }
-      if (bb.st === "listen") bbSet("idle");
-      bbBubble("err", voiceError(e && e.code));
-    });
-  });
-  function bbSend(text) {
-    state.boubou.push({ role: "user", content: text });
-    state.boubou = state.boubou.slice(-30);
-    save();
-    bbBubble("you", text);
-    if (CRISIS.test(text)) $("bbCrisis").hidden = false;
-    markCare();
-    bbSet("think");
-    var bear = bbBubble("bear", "");
-    bear.innerHTML = '<span class="typing" aria-label="Bouboule réfléchit"><b></b><b></b><b></b></span>';
-    var p = payload();
-    p.persona = "bouboule";
-    p.messages = state.boubou;
-    Transport.chat(p, function (t) {
-      var i = t.indexOf("⚠︎");
-      bear.textContent = (i >= 0 ? t.slice(0, i) : t).trim() || "…";
-      bbScroll();
-    }).then(function (full) {
-      full = (full || "").trim();
-      bear.remove();
-      var cut = full.indexOf("⚠︎");
-      if (cut >= 0 || !full) {
-        state.boubou.pop();
-        save();
-        bbBubble("err", cut >= 0 ? full.slice(cut + 2).trim() : "Bouboule n’a pas trouvé ses mots. Tu peux lui redire ?");
-        bbSet("idle");
-        return;
-      }
-      state.boubou.push({ role: "assistant", content: full });
-      save();
-      bbBear(full, true);
-      bbSpeak(full);
-    }).catch(function (e) {
-      bear.remove();
-      state.boubou.pop();
-      save();
-      bbBubble("err", errorText(e && e.code));
-      bbSet("idle");
-    });
-  }
-  $("bbForm").addEventListener("submit", function (e) {
-    e.preventDefault();
-    Voice.unlock && Voice.unlock();
-    var t = $("bbInput").value.trim();
-    if (!t || bb.st === "think" || bb.st === "listen") return;
-    $("bbInput").value = "";
-    if (bb.st === "talk") bbHush();
-    bbSend(t);
-  });
-  function renderVoiceBtn() {
-    var can = !bb.info || bb.info.speak;
-    $("bbVoice").hidden = !can;
-    $("bbVoice").textContent = state.voiceOn ? "🔊" : "🔇";
-    $("bbVoice").setAttribute("aria-label", state.voiceOn ? "Couper la voix de Bouboule" : "Remettre la voix de Bouboule");
-    $("bbVoice").setAttribute("aria-pressed", state.voiceOn ? "true" : "false");
-  }
-  renderVoiceBtn();
-  $("bbVoice").addEventListener("click", function () {
-    state.voiceOn = !state.voiceOn;
-    save();
-    renderVoiceBtn();
-    if (!state.voiceOn && bb.st === "talk") { Voice.hush(); }
-  });
-  $("bbNew").addEventListener("click", function () {
-    if (bb.st === "listen") Voice.stop();
-    bbHush();
-    bbSet("idle");
-    $("bbCrisis").hidden = true;
-    bbGreet();
   });
 
   // --- Journal météo ---
