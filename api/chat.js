@@ -45,8 +45,11 @@ export default async function handler(req, res) {
   try {
     const params = {
       model: MODEL,
-      max_tokens: 4000,
-      output_config: { effort: "medium" },
+      max_tokens: 2000,
+      // Réflexion courte : largement suffisant pour une conversation, et beaucoup moins cher.
+      output_config: { effort: "low" },
+      // Met en cache le début de la conversation : ce qui est relu coûte ~10 fois moins cher.
+      cache_control: { type: "ephemeral" },
       system,
       messages,
     };

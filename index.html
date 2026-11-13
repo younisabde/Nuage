@@ -1410,12 +1410,12 @@
     return "Je n’arrive pas à me connecter pour l’instant 😕 Vérifie ta connexion et renvoie-moi ton message, je suis là.";
   }
 
-  // --- Mémoire : mise à jour du carnet toutes les 4 réponses, et en fin de conversation ---
+  // --- Mémoire : mise à jour du carnet toutes les 6 réponses, et en fin de conversation ---
   var memoBusy = false;
   function remember(final) {
     var users = state.messages.filter(function (m) { return m.role === "user"; }).length;
     var fresh = users - state.memoAt;
-    if (memoBusy || fresh < 1 || (!final && fresh < 4)) return;
+    if (memoBusy || fresh < 1 || (!final && fresh < 6)) return;
     memoBusy = true;
     var count = users, conv = state.convId;
     Transport.memo({ memory: state.memory, messages: aiMessages().slice(-30) }).then(function (m) {

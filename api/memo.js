@@ -26,7 +26,7 @@ export default async function handler(req, res) {
   try {
     const response = await client.messages.create({
       model: MODEL,
-      max_tokens: 2000,
+      max_tokens: 1200,
       output_config: {
         effort: "low",
         format: { type: "json_schema", schema: MEMO_SCHEMA },

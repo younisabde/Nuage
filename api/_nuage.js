@@ -73,7 +73,7 @@ const STYLES = {
   idees: "changer les idées",
 };
 
-const MAX_MESSAGES = 40;
+const MAX_MESSAGES = 20; // Nuage relit les 20 derniers messages (le carnet garde le reste)
 const MAX_CHARS = 4000;
 
 // Nettoie la conversation envoyée par le navigateur.
