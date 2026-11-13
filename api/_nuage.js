@@ -138,15 +138,16 @@ export const MODEL = (process.env.NUAGE_MODEL || "claude-opus-5-5").trim();
 // Le relais automatique en cas de refus n'existe que pour certains modèles.
 export const HAS_FALLBACK = /^claude-(opus|sonnet|fable)-/.test(MODEL);
 
-// Garde-fou anti-abus, en mémoire du serveur (approximatif mais suffisant contre les rafales).
+// Garde-fou anti-abus, désactivé par défaut. Pour l'activer, ajouter dans Vercel
+// la variable NUAGE_MAX_PAR_JOUR (nombre de messages par personne et par jour).
 const hits = new Map();
 export function tooMany(req) {
+  const perDay = Number(process.env.NUAGE_MAX_PAR_JOUR);
+  if (!perDay) return false;
   const ip = String(req.headers?.["x-forwarded-for"] || req.socket?.remoteAddress || "?").split(",")[0].trim();
   const now = Date.now();
   const list = (hits.get(ip) || []).filter((t) => now - t < 24 * 3600 * 1000);
-  const recent = list.filter((t) => now - t < 10 * 60 * 1000).length;
-  const perDay = Number(process.env.NUAGE_MAX_PAR_JOUR) || 150;
-  if (recent >= 30 || list.length >= perDay) return true;
+  if (list.length >= perDay) return true;
   list.push(now);
   hits.set(ip, list);
   if (hits.size > 5000) hits.delete(hits.keys().next().value);

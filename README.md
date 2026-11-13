@@ -45,7 +45,7 @@ Réglages facultatifs (Vercel → Settings → Environment Variables, puis **Red
 | Variable | Rôle | Par défaut |
 |---|---|---|
 | `NUAGE_MODEL` | Modèle de Claude utilisé. `claude-sonnet-5-5` coûte environ 2 fois moins cher, `claude-haiku-5-5` environ 40 fois moins cher | `claude-opus-5-5` |
-| `NUAGE_MAX_PAR_JOUR` | Nombre maximum de messages par personne (adresse IP) et par jour, en plus d'une limite de 30 messages par 10 minutes | `150` |
+| `NUAGE_MAX_PAR_JOUR` | Nombre maximum de messages par personne (adresse IP) et par jour | aucune limite |
 
 Pensez aussi à fixer un plafond de dépenses mensuel dans la console Anthropic.
 
