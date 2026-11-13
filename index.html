@@ -1355,7 +1355,8 @@
           $("thread").lastElementChild.remove();
         }
       }
-      bubble("assistant", errorText(code));
+      var errRow = bubble("assistant", errorText(code));
+      if (code === "not_granted" || code === "unavailable") addPermButton(errRow);
     }).then(function () {
       busy = false;
       setTalking(false);
@@ -1363,9 +1364,47 @@
     });
   }
 
+  // Version claude.ai : rouvrir la demande d'autorisation, puis renvoyer le message.
+  function addPermButton(row) {
+    if (!window.claude || !window.claude.use) return;
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "primary";
+    b.style.cssText = "margin-top:10px;font-size:15px;padding:10px 16px;width:auto";
+    b.textContent = "✅ Autoriser Nuage à répondre";
+    row.querySelector(".bubble").appendChild(document.createElement("br"));
+    row.querySelector(".bubble").appendChild(b);
+    function retry() {
+      b.remove();
+      if (input.value.trim()) $("composer").requestSubmit();
+    }
+    function stuck() {
+      b.remove();
+      bubble("assistant", "Ton appli ne me laisse pas encore répondre ici 😕 Ouvre le lien dans Safari ou Chrome, connecté à claude.ai. Sinon, dans le menu ··· en haut de la page, va dans Autorisations et active Claude.");
+    }
+    b.addEventListener("click", function () {
+      window.claude.use("permissions").then(function (perms) {
+        if (!perms) return stuck();
+        return perms.state("sample").then(function (st) {
+          if (st === "granted") return retry();
+          if (st === "prompt") return perms.request(["sample"]).then(function (r) { if (r.sample === "granted") retry(); });
+          if (st === "denied") {
+            return perms.manage().then(function () { return perms.state("sample"); }).then(function (st2) {
+              if (st2 === "granted") retry(); else stuck();
+            });
+          }
+          stuck();
+        });
+      }).catch(stuck);
+    });
+  }
   function errorText(code) {
-    if (code === "not_granted" || code === "unavailable" || code === "sampling_disabled")
-      return "Pour que je puisse te répondre ici, il faut autoriser cette page à utiliser Claude. Accepte la demande qui s’affiche, ou ouvre la page sur claude.ai.";
+    if (code === "not_granted")
+      return "Pour que je puisse te répondre, il faut m’autoriser à utiliser Claude. Touche le bouton juste en dessous 👇";
+    if (code === "unavailable")
+      return "Je n’arrive pas à utiliser Claude dans cette appli. Touche le bouton en dessous ; si ça ne marche pas, ouvre le lien dans Safari ou Chrome, connecté à claude.ai : là, ça marche.";
+    if (code === "sampling_disabled")
+      return "Claude n’est pas disponible pour ton compte ici. Essaie d’ouvrir le lien dans Safari ou Chrome sur claude.ai, ou avec un autre compte Claude.";
     if (code === "rate_limited") return "Beaucoup de messages d’un coup, je reprends mon souffle… Réessaie dans un petit moment.";
     if (code === "refused") return "Je n’arrive pas à te répondre là-dessus. Si tu traverses un moment très dur, le 3114 est joignable gratuitement 24h/24. Et je reste là si tu veux me parler d’autre chose.";
     return "Je n’arrive pas à me connecter pour l’instant 😕 Vérifie ta connexion et renvoie-moi ton message, je suis là.";
