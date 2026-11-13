@@ -40,6 +40,15 @@ ANTHROPIC_API_KEY=sk-ant-... npm run dev
 2. Dans *Environment Variables*, ajouter `ANTHROPIC_API_KEY` (clé créée sur [console.anthropic.com](https://console.anthropic.com)).
 3. **Deploy**. Nuage est en ligne à l'adresse donnée par Vercel, et se met à jour à chaque envoi sur GitHub.
 
+Réglages facultatifs (Vercel → Settings → Environment Variables, puis **Redeploy**) :
+
+| Variable | Rôle | Par défaut |
+|---|---|---|
+| `NUAGE_MODEL` | Modèle de Claude utilisé. `claude-sonnet-5-5` coûte environ 2 fois moins cher, `claude-haiku-5-5` environ 40 fois moins cher | `claude-opus-5-5` |
+| `NUAGE_MAX_PAR_JOUR` | Nombre maximum de messages par personne (adresse IP) et par jour, en plus d'une limite de 30 messages par 10 minutes | `150` |
+
+Pensez aussi à fixer un plafond de dépenses mensuel dans la console Anthropic.
+
 La clé reste sur le serveur : elle n'est jamais envoyée au navigateur. GitHub Pages ne suffit pas, car il faut un serveur pour cacher la clé.
 
 ### À prévoir avant une ouverture au public

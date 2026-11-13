@@ -1,7 +1,7 @@
 // Nuage : met à jour le petit carnet (ce que Nuage retient d'une conversation à l'autre).
 // Le carnet est renvoyé au navigateur, qui est le seul à le stocker.
 import Anthropic from "@anthropic-ai/sdk";
-import { MEMO_PROMPT, MEMO_SCHEMA, cleanMemory, cleanMessages, readBody } from "./_nuage.js";
+import { MEMO_PROMPT, MEMO_SCHEMA, MODEL, cleanMemory, cleanMessages, readBody } from "./_nuage.js";
 
 const client = new Anthropic();
 
@@ -25,7 +25,7 @@ export default async function handler(req, res) {
 
   try {
     const response = await client.messages.create({
-      model: "claude-opus-5-5",
+      model: MODEL,
       max_tokens: 2000,
       output_config: {
         effort: "low",

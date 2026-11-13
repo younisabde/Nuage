@@ -131,3 +131,24 @@ export function readBody(req) {
     return {};
   }
 }
+
+// Modèle utilisé : réglable dans Vercel avec la variable NUAGE_MODEL
+// (par exemple claude-sonnet-5-5 ou claude-haiku-5-5 pour payer moins cher).
+export const MODEL = (process.env.NUAGE_MODEL || "claude-opus-5-5").trim();
+// Le relais automatique en cas de refus n'existe que pour certains modèles.
+export const HAS_FALLBACK = /^claude-(opus|sonnet|fable)-/.test(MODEL);
+
+// Garde-fou anti-abus, en mémoire du serveur (approximatif mais suffisant contre les rafales).
+const hits = new Map();
+export function tooMany(req) {
+  const ip = String(req.headers?.["x-forwarded-for"] || req.socket?.remoteAddress || "?").split(",")[0].trim();
+  const now = Date.now();
+  const list = (hits.get(ip) || []).filter((t) => now - t < 24 * 3600 * 1000);
+  const recent = list.filter((t) => now - t < 10 * 60 * 1000).length;
+  const perDay = Number(process.env.NUAGE_MAX_PAR_JOUR) || 150;
+  if (recent >= 30 || list.length >= perDay) return true;
+  list.push(now);
+  hits.set(ip, list);
+  if (hits.size > 5000) hits.delete(hits.keys().next().value);
+  return false;
+}
